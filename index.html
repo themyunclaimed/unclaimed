@@ -6,12 +6,13 @@
 <title>Unclaimed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   /* Layout: fashion-shop minimalism. White page, black type, hairline grids edge to edge, no radius, no shadow. One accent: cream badge. */
-  --bg:#FFFFFF; --ink:#000000; --muted:#6E6E6E; --line:#E3E3E3; --tile:#F4F4F2; --cream:#F0EBDD;
-  --font:"Manrope","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --bg:#FFFFFF; --ink:#000000; --muted:#6E6E6E; --line:#E3E3E3; --tile:#F3F5F4; --cream:#DDF3E6; --mint:#DDF3E6; --mint-strong:#1FA66B; --green:#0E6B45;
+  --font:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -21,8 +22,14 @@ body{word-break:keep-all;overflow-wrap:break-word;background:var(--bg);color:var
 a{color:inherit}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .label{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+
+/* Unclaimed identity: mono figures, mint dot */
+.item .img .num,.card .big,.tk-sum .big,.tk-sum .mid,.tk-left b,.cov li b,.date .d,.tk-table td,.stamp,.opt .n,ol.steps li::before{font-family:var(--mono);letter-spacing:-.03em}
+.item .img .num{font-weight:600}
+.badge.utsu,.item .tag,.tk-fresh,.st.soon,.note{color:var(--green)}
+.note{color:var(--ink);border-left:3px solid var(--mint-strong)}
 /* header */
-.bar{background:var(--ink);color:var(--bg);text-align:center;padding:7px 16px}
+.bar{background:var(--mint);color:var(--green);text-align:center;padding:7px 16px}
 .bar .label{letter-spacing:.06em}
 header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;height:56px}
 .logo{font-weight:800;font-size:20px;letter-spacing:-.01em;text-transform:uppercase;text-decoration:none}
@@ -46,6 +53,7 @@ nav.menu a:hover{text-decoration:underline;text-underline-offset:4px}
 .cards{position:relative;width:min(340px,80%);aspect-ratio:1.4}
 .card{position:absolute;inset:0;border:1px solid var(--ink);background:var(--bg);padding:18px;display:flex;flex-direction:column;justify-content:space-between}
 .card.back{transform:translate(28px,-24px);background:var(--cream)}
+.card.back>*{visibility:hidden}
 .card .big{font-size:28px;font-weight:800;letter-spacing:-.02em}
 .card .row{display:flex;justify-content:space-between;align-items:flex-end}
 .stamp{position:absolute;bottom:18px;right:18px;font-size:11px;font-weight:800;letter-spacing:.06em;background:var(--cream);padding:4px 10px;text-transform:uppercase}
@@ -166,10 +174,189 @@ footer{padding:48px 20px 56px}
   .list{grid-template-columns:1fr}
   .list .opt{border-right:0 !important}
 }
+
+/* campus selector */
+.pl-grid{grid-template-columns:repeat(4,1fr)}
+.pl-opt{font:inherit;text-align:left;background:var(--bg);color:var(--ink);border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px;cursor:pointer;display:grid;gap:4px}
+.pl-opt:last-child{border-right:0}
+.pl-opt:hover{background:var(--tile)}
+.pl-opt .pl-u{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.pl-opt .pl-c{font-size:13px;color:var(--muted)}
+.pl-opt .pl-t{font-family:var(--mono);font-size:12px;margin-top:8px}
+.pl-opt[aria-pressed="true"]{background:var(--ink);color:#fff}
+.pl-opt[aria-pressed="true"] .pl-c{color:#bbb}
+.pl-opt[aria-pressed="true"] .pl-t{color:var(--mint)}
+.pl-pill{text-decoration:none;border:1px solid var(--ink);padding:5px 10px;white-space:nowrap}
+.pl-pill:hover{background:var(--ink);color:#fff}
+.hdr-r{display:flex;align-items:center;gap:16px}
+@media (max-width:900px){.pl-grid{grid-template-columns:1fr 1fr}.pl-opt:nth-child(2n){border-right:0}}
+@media (max-width:420px){.pl-grid{grid-template-columns:1fr}.pl-opt{border-right:0}}
 </style>
+<script>
+/* ===== Plan data (2026–27). Sources listed per plan. ===== */
+const PLANS = {
+  utsu: {
+    id:"utsu", union:"UTSU",
+    short:{ko:"UTSU 플랜", en:"UTSU plan"},
+    who:{ko:"St. George 풀타임 학부생", en:"St. George full-time undergrads"},
+    admin:{ko:"Health & Dental · 운영: Studentcare(Alumo) · 청구처: GreenShield", en:"Health & Dental · run by Studentcare (Alumo) · claims via GreenShield"},
+    idFmt:{ko:"\"UTS\" + 학번 + 00 (예: UTS100123456700)", en:"\"UTS\" + student number + 00 (e.g. UTS100123456700)"},
+    idShort:"UTS + 학번",
+    contact:"UTSU 416-978-4911 · hello@utsu.ca", phone:"416-978-4911",
+    url:"https://www.utsu.ca/health/",
+    optFall:{ko:"2026. 9. 8 – 10. 2", en:"Sept 8 – Oct 2, 2026"},
+    optWinter:{ko:"2027. 1. 6 – 1. 29", en:"Jan 6 – 29, 2027"},
+    virtual:{ko:"UTSU 플랜에는 Dialogue 비대면 진료(간호사·의사·전문의)와 24시간 상담 서비스 Empower Me가 포함돼 있어요.", en:"The UTSU plan includes Dialogue virtual care (nurses, doctors, specialists) and Empower Me, a 24/7 support service."},
+    covers:{ko:"처방약 80%, 치과 연 $800, 시력검사·안경, 물리치료·마사지, 심리상담, 여행자 보험", en:"Drugs 80%, dental $800/yr, vision, physio & massage, counselling, travel"},
+    rx:[[{ko:"처방약",en:"Prescription drugs"},{ko:"80% · 연 최대 $5,000",en:"80% · up to $5,000/yr"}]],
+    dentalMax:800,
+    dental:[[{ko:"검진·X-ray",en:"Exams & X-rays"},"70%"],[{ko:"스케일링·폴리싱",en:"Scaling & polishing"},"70%"],[{ko:"검사·발치",en:"Lab tests & extractions"},"80%"],[{ko:"충치 치료·신경 치료·수술",en:"Fillings, root canals, surgery"},"60%"]],
+    dentalNote:{ko:"검진·폴리싱·불소 도포는 12개월에 한 번, 바이트윙 X-ray는 9개월에 한 번까지 보장돼요.", en:"Exams, polishing and fluoride: once per 12 months. Bitewing X-rays: once per 9 months."},
+    vision:[[{ko:"시력검사+안경+렌즈 합산",en:"Exam + glasses + contacts"},{ko:"2년마다 $150",en:"$150 / 2 yrs"}],[{ko:"Studentcare 제휴 안경점(Vision Network)",en:"Studentcare Vision Network"},{ko:"최대 30% 또는 $75 할인",en:"Up to 30% or $75 off"}]],
+    para:[[{ko:"물리치료",en:"Physiotherapy"},{ko:"회당 $30 · 연 20회",en:"$30/visit · 20/yr"}],[{ko:"카이로프랙틱(척추 교정)",en:"Chiropractic"},{ko:"회당 $30 · 연 20회",en:"$30/visit · 20/yr"}],[{ko:"마사지(RMT)·침술",en:"Massage (RMT) & acupuncture"},{ko:"회당 $30 · 둘을 합쳐 연 20회",en:"$30/visit · 20/yr combined"}]],
+    mental:[[{ko:"정신건강 전문가 상담",en:"Mental health practitioners"},{ko:"회당 최대 $100 · 연 15회",en:"Up to $100/visit · 15/yr"}],[{ko:"Empower Me 24시간 상담",en:"Empower Me 24/7 support"},{ko:"무료",en:"Free"}]],
+    vaccine:[[{ko:"예방접종",en:"Vaccinations"},{ko:"100% · 연 최대 $200",en:"100% · up to $200/yr"}]],
+    contra:{ko:"연 최대 $250",en:"up to $250 a year"},
+    travel:[[{ko:"여행 중 응급 의료비",en:"Emergency care on trips"},{ko:"여행 1회당 최대 120일",en:"Up to 120 days per trip"}],[{ko:"평생 한도",en:"Lifetime maximum"},"$5,000,000"]],
+    B:[
+      {id:"dental", t:{ko:"치과",en:"Dental"}, type:"money", limit:800, note:{ko:"검진·스케일링 70%, 충치 치료 60%",en:"Exams & cleanings 70%, fillings 60%"}},
+      {id:"mental", t:{ko:"심리상담",en:"Counselling"}, type:"visit", limit:15, per:100, note:{ko:"회당 최대 $100",en:"Up to $100 a visit"}},
+      {id:"physio", t:{ko:"물리치료",en:"Physiotherapy"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30",en:"$30 a visit"}},
+      {id:"chiro", t:{ko:"카이로프랙틱(척추 교정)",en:"Chiropractic"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30",en:"$30 a visit"}},
+      {id:"massage", t:{ko:"마사지·침술",en:"Massage & acupuncture"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30 · 둘을 합쳐 연 20회",en:"$30 a visit · 20 combined"}},
+      {id:"vision", t:{ko:"안경·렌즈·시력검사",en:"Glasses, contacts, eye exam"}, type:"money", limit:150, years:2, note:{ko:"2년마다 합산",en:"Combined, every 2 years"}},
+      {id:"vaccine", t:{ko:"예방접종",en:"Vaccines"}, type:"money", limit:200, note:{ko:"100% 보장",en:"Covered 100%"}},
+      {id:"contra", t:{ko:"피임약·피임기구",en:"Contraceptives"}, type:"money", limit:250, note:{ko:"연간 한도",en:"Annual limit"}},
+      {id:"rx", t:{ko:"처방약",en:"Prescription drugs"}, type:"money", limit:5000, noTotal:true, note:{ko:"80% 보장 · 합계에서 제외",en:"80% covered · not in total"}}
+    ]
+  },
+  utmsu: {
+    id:"utmsu", union:"UTMSU",
+    short:{ko:"UTMSU 플랜", en:"UTMSU plan"},
+    who:{ko:"Mississauga 풀타임 학부생", en:"Mississauga full-time undergrads"},
+    admin:{ko:"Health & Dental · 운영: UTMSU · 보험사·청구처: GreenShield", en:"Health & Dental · run by UTMSU · insured by GreenShield"},
+    idFmt:{ko:"\"UTM\" + 학번 + -00 (예: UTM1001234567-00)", en:"\"UTM\" + student number + -00 (e.g. UTM1001234567-00)"},
+    idShort:"UTM + 학번 + -00",
+    contact:"UTMSU 905-828-5420 · health@utmsu.ca", phone:"905-828-5420",
+    url:"https://utmsu.ca/service/health-dental-plan/",
+    optFall:{ko:"9. 1 – 9. 30", en:"Sept 1 – 30"},
+    optWinter:{ko:"1. 1 – 1. 31 (겨울학기만 등록한 학생)", en:"Jan 1 – 31 (Winter-only students)"},
+    virtual:null,
+    covers:{ko:"처방약 90%, 치과 연 $800, 시력검사·안경, 물리치료·마사지, 심리상담(회당 $125), 여행자 보험", en:"Drugs 90%, dental $800/yr, vision, physio & massage, counselling ($125/visit), travel"},
+    rx:[[{ko:"처방약",en:"Prescription drugs"},{ko:"90% · 연 최대 $5,000",en:"90% · up to $5,000/yr"}]],
+    dentalMax:800,
+    dental:[[{ko:"진단·예방·잇몸 치료",en:"Diagnostic, preventive, periodontal"},"70%"],[{ko:"충치 치료·마취·신경 치료",en:"Fillings, anaesthesia, endodontics"},"60%"],[{ko:"기본 구강 수술",en:"Basic oral surgery"},"80%"]],
+    dentalNote:{ko:"GreenShield 제휴 치과(Student Dental Discount Network)에 가면 추가 할인을 받을 수 있어요.", en:"Dentists in GreenShield's Student Dental Discount Network give extra savings."},
+    vision:[[{ko:"안경·렌즈",en:"Glasses or contacts"},{ko:"24개월마다 $150",en:"$150 / 24 months"}],[{ko:"시력검사",en:"Eye exam"},{ko:"2년에 한 번 (위 금액에 포함)",en:"Once every 2 years (within the $150)"}]],
+    para:[[{ko:"물리치료",en:"Physiotherapy"},{ko:"회당 $30 · 연 20회",en:"$30/visit · 20/yr"}],[{ko:"카이로프랙틱(척추 교정)",en:"Chiropractic"},{ko:"회당 $30 · 연 20회",en:"$30/visit · 20/yr"}],[{ko:"마사지(RMT)·침술·자연요법",en:"Massage (RMT), acupuncture, naturopathy"},{ko:"회당 $30 · 합쳐서 연 20회",en:"$30/visit · 20/yr combined"}]],
+    mental:[[{ko:"정신건강 전문가 상담",en:"Mental health practitioners"},{ko:"회당 최대 $125 · 연 25회",en:"Up to $125/visit · 25/yr"}]],
+    vaccine:[[{ko:"HPV 백신",en:"HPV vaccines"},{ko:"연 최대 $200 (처방약 한도에 포함)",en:"Up to $200/yr (within drug max)"}]],
+    contra:{ko:"연 최대 $250",en:"up to $250 a year"},
+    travel:[[{ko:"여행 중 응급 의료비",en:"Emergency care on trips"},{ko:"여행 1회당 최대 120일",en:"Up to 120 days per trip"}],[{ko:"연간 한도",en:"Yearly maximum"},"$5,000,000"]],
+    B:[
+      {id:"dental", t:{ko:"치과",en:"Dental"}, type:"money", limit:800, note:{ko:"예방 70%, 충치 치료 60%, 구강 수술 80%",en:"Preventive 70%, fillings 60%, oral surgery 80%"}},
+      {id:"mental", t:{ko:"심리상담",en:"Counselling"}, type:"visit", limit:25, per:125, note:{ko:"회당 최대 $125",en:"Up to $125 a visit"}},
+      {id:"physio", t:{ko:"물리치료",en:"Physiotherapy"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30",en:"$30 a visit"}},
+      {id:"chiro", t:{ko:"카이로프랙틱(척추 교정)",en:"Chiropractic"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30",en:"$30 a visit"}},
+      {id:"massage", t:{ko:"마사지·침술·자연요법",en:"Massage, acupuncture, naturopathy"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30 · 합쳐서 연 20회 · 마사지는 처방 필요",en:"$30 a visit · 20 combined · massage needs a referral"}},
+      {id:"vision", t:{ko:"안경·렌즈·시력검사",en:"Glasses, contacts, eye exam"}, type:"money", limit:150, years:2, note:{ko:"24개월마다 합산",en:"Combined, every 24 months"}},
+      {id:"vaccine", t:{ko:"HPV 백신",en:"HPV vaccines"}, type:"money", limit:200, note:{ko:"처방약 한도에 포함",en:"Within the drug maximum"}},
+      {id:"contra", t:{ko:"피임약·피임기구",en:"Contraceptives"}, type:"money", limit:250, note:{ko:"연간 한도",en:"Annual limit"}},
+      {id:"rx", t:{ko:"처방약",en:"Prescription drugs"}, type:"money", limit:5000, noTotal:true, note:{ko:"90% 보장 · 합계에서 제외",en:"90% covered · not in total"}}
+    ]
+  },
+  scsu: {
+    id:"scsu", union:"SCSU",
+    short:{ko:"SCSU 플랜", en:"SCSU plan"},
+    who:{ko:"Scarborough 풀타임 학부생", en:"Scarborough full-time undergrads"},
+    admin:{ko:"Health & Dental · 운영: SCSU · 보험사·청구처: GreenShield", en:"Health & Dental · run by SCSU · insured by GreenShield"},
+    idFmt:{ko:"\"SCU\" + 학번 + -00 (예: SCU123456789-00)", en:"\"SCU\" + student number + -00 (e.g. SCU123456789-00)"},
+    idShort:"SCU + 학번 + -00",
+    contact:"SCSU 416-287-7047 · health@scsu.ca", phone:"416-287-7047",
+    url:"https://www.scsu.ca/health-dental",
+    optFall:{ko:"9. 1 – 9. 30", en:"Sept 1 – 30"},
+    optWinter:{ko:"1. 1 – 1. 30 (겨울학기만 등록한 학생)", en:"Jan 1 – 30 (Winter-only students)"},
+    virtual:null,
+    covers:{ko:"처방약(조제료 제외), 치과 연 $800, 시력검사·안경, 물리치료·마사지·침술, 심리상담(회당 $125), 여행자 보험", en:"Drugs (minus dispensing fee), dental $800/yr, vision, physio/massage/acupuncture, counselling ($125/visit), travel"},
+    rx:[[{ko:"처방약",en:"Prescription drugs"},{ko:"약값 보장 · 조제료는 본인 부담 · 연 최대 $5,000",en:"Drug cost covered · you pay the dispensing fee · up to $5,000/yr"}],[{ko:"HPV 백신",en:"HPV vaccines"},{ko:"50%",en:"50%"}]],
+    dentalMax:800,
+    dental:[[{ko:"검진·스케일링 등 기본 서비스",en:"Exams, cleanings, other basic services"},"70%"],[{ko:"충치 치료 등 기본 수복",en:"Basic restorative (fillings)"},"75%"],[{ko:"틀니 수리·마취",en:"Denture repairs, anaesthesia"},"60%"]],
+    dentalNote:null,
+    vision:[[{ko:"안경·렌즈",en:"Glasses or contacts"},{ko:"24개월마다 $175",en:"$175 / 24 months"}],[{ko:"시력검사",en:"Eye exam"},{ko:"2년에 한 번 (위 금액에 포함)",en:"Once every 2 years (within the $175)"}]],
+    para:[[{ko:"물리치료",en:"Physiotherapy"},{ko:"회당 $20 · 연 최대 $1,000",en:"$20/visit · up to $1,000/yr"}],[{ko:"카이로프랙틱(척추 교정)",en:"Chiropractic"},{ko:"회당 $20 · 연 최대 $500",en:"$20/visit · up to $500/yr"}],[{ko:"마사지(RMT, 처방 필요)",en:"Massage (RMT, referral needed)"},{ko:"회당 $20 · 연 최대 $500",en:"$20/visit · up to $500/yr"}],[{ko:"침술",en:"Acupuncture"},{ko:"회당 $20 · 연 최대 $500",en:"$20/visit · up to $500/yr"}]],
+    mental:[[{ko:"정신건강 전문가 상담",en:"Mental health practitioners"},{ko:"회당 최대 $125 · 연 20회",en:"Up to $125/visit · 20/yr"}]],
+    vaccine:[[{ko:"예방접종",en:"Vaccines"},{ko:"연 최대 $100 (처방약 한도에 포함)",en:"Up to $100/yr (within drug max)"}]],
+    contra:{ko:"연 최대 $300",en:"up to $300 a year"},
+    travel:[[{ko:"여행 중 응급 의료비",en:"Emergency care on trips"},{ko:"여행 1회당 최대 120일",en:"Up to 120 days per trip"}],[{ko:"연간 한도",en:"Yearly maximum"},"$5,000,000"]],
+    B:[
+      {id:"dental", t:{ko:"치과",en:"Dental"}, type:"money", limit:800, note:{ko:"기본 서비스 70%, 충치 치료 75%",en:"Basic services 70%, fillings 75%"}},
+      {id:"mental", t:{ko:"심리상담",en:"Counselling"}, type:"visit", limit:20, per:125, note:{ko:"회당 최대 $125",en:"Up to $125 a visit"}},
+      {id:"physio", t:{ko:"물리치료",en:"Physiotherapy"}, type:"money", limit:1000, note:{ko:"회당 $20까지",en:"Up to $20 a visit"}},
+      {id:"chiro", t:{ko:"카이로프랙틱(척추 교정)",en:"Chiropractic"}, type:"money", limit:500, note:{ko:"회당 $20까지",en:"Up to $20 a visit"}},
+      {id:"massage", t:{ko:"마사지(RMT)",en:"Massage (RMT)"}, type:"money", limit:500, note:{ko:"회당 $20까지 · 처방 필요",en:"Up to $20 a visit · referral needed"}},
+      {id:"acu", t:{ko:"침술",en:"Acupuncture"}, type:"money", limit:500, note:{ko:"회당 $20까지",en:"Up to $20 a visit"}},
+      {id:"vision", t:{ko:"안경·렌즈·시력검사",en:"Glasses, contacts, eye exam"}, type:"money", limit:175, years:2, note:{ko:"24개월마다 합산",en:"Combined, every 24 months"}},
+      {id:"vaccine", t:{ko:"예방접종",en:"Vaccines"}, type:"money", limit:100, note:{ko:"처방약 한도에 포함",en:"Within the drug maximum"}},
+      {id:"contra", t:{ko:"피임약·피임기구",en:"Contraceptives"}, type:"money", limit:300, note:{ko:"연간 한도",en:"Annual limit"}},
+      {id:"rx", t:{ko:"처방약",en:"Prescription drugs"}, type:"money", limit:5000, noTotal:true, note:{ko:"조제료 제외 보장 · 합계에서 제외",en:"Covered minus dispensing fee · not in total"}}
+    ]
+  },
+  utgsu: {
+    id:"utgsu", union:"UTGSU",
+    short:{ko:"UTGSU 플랜", en:"UTGSU plan"},
+    who:{ko:"대학원생 (풀타임·파트타임)", en:"Graduate students (full- & part-time)"},
+    admin:{ko:"Health & Dental · 운영: Alumo · 보험사·청구처: GreenShield", en:"Health & Dental · run by Alumo · insured by GreenShield"},
+    idFmt:{ko:"\"UTG\" + 학번 + 00 (예: UTG12345678900)", en:"\"UTG\" + student number + 00 (e.g. UTG12345678900)"},
+    idShort:"UTG + 학번 + 00",
+    contact:"UTGSU health@utgsu.ca · GreenShield 1-888-525-7587", phone:"1-888-525-7587",
+    url:"https://utgsu.alumo.ca/",
+    optFall:{ko:"2026. 9. 1 – 9. 30", en:"Sept 1 – 30, 2026"},
+    optWinter:{ko:"2027. 1. 6 – 1. 29", en:"Jan 6 – 29, 2027"},
+    virtual:{ko:"UTGSU 플랜에는 24시간 정신건강 지원 서비스 Empower Me가 포함돼 있어요.", en:"The UTGSU plan includes Empower Me, a 24/7 mental health support service."},
+    covers:{ko:"처방약 80%, 치과 연 $550, 시력검사·안경, 물리치료·카이로·마사지, 심리상담(연 $750), 여행자 보험", en:"Drugs 80%, dental $550/yr, vision, physio/chiro/massage, counselling ($750/yr), travel"},
+    rx:[[{ko:"처방약",en:"Prescription drugs"},{ko:"80% · 연 최대 $5,000",en:"80% · up to $5,000/yr"}]],
+    dentalMax:550,
+    dental:[[{ko:"예방(검진·스케일링)",en:"Preventive (exams, cleanings)"},"70%"],[{ko:"기본 치료(충치·신경·잇몸)",en:"Basic (fillings, endo, perio)"},"70%"],[{ko:"매복 사랑니 발치",en:"Impacted tooth extraction"},"70%"],[{ko:"크라운·브릿지",en:"Crowns, bridges"},{ko:"보장 안 됨",en:"Not covered"}]],
+    dentalNote:{ko:"$300 이상 치료는 미리 승인(사전 견적)을 받아야 해요. 교정은 보장되지 않아요.", en:"Treatment of $300 or more needs pre-approval. Orthodontics isn't covered."},
+    vision:[[{ko:"안경·렌즈·라식",en:"Glasses, contacts, laser surgery"},{ko:"24개월마다 $125",en:"$125 / 24 months"}],[{ko:"시력검사",en:"Eye exam"},{ko:"24개월마다 $75",en:"$75 / 24 months"}]],
+    para:[[{ko:"물리치료·카이로프랙틱",en:"Physio & chiropractic"},{ko:"회당 $50 · 합쳐서 연 20회",en:"$50/visit · 20/yr combined"}],[{ko:"마사지(의사 소견서 필요)",en:"Massage (doctor's referral)"},{ko:"회당 $30 · 연 최대 $500",en:"$30/visit · up to $500/yr"}],[{ko:"침술·자연요법",en:"Acupuncture & naturopathy"},{ko:"회당 $30 · 합쳐서 연 20회",en:"$30/visit · 20/yr combined"}]],
+    mental:[[{ko:"심리상담(심리사·상담사·사회복지사)",en:"Psychologists, counsellors, social workers"},{ko:"100% · 합쳐서 연 최대 $750",en:"100% · up to $750/yr combined"}],[{ko:"Empower Me 24시간 상담",en:"Empower Me 24/7 support"},{ko:"무료",en:"Free"}]],
+    vaccine:null,
+    contra:null,
+    travel:[[{ko:"여행 중 응급 의료비",en:"Emergency care on trips"},{ko:"여행 1회당 최대 120일",en:"Up to 120 days per trip"}],[{ko:"평생 한도",en:"Lifetime maximum"},"$5,000,000"]],
+    B:[
+      {id:"dental", t:{ko:"치과",en:"Dental"}, type:"money", limit:550, note:{ko:"예방·기본 치료 70%",en:"Preventive & basic 70%"}},
+      {id:"mental", t:{ko:"심리상담",en:"Counselling"}, type:"money", limit:750, note:{ko:"100% 보장 · 연간 합산",en:"Covered 100% · combined yearly"}},
+      {id:"physio", t:{ko:"물리치료·카이로프랙틱",en:"Physio & chiropractic"}, type:"visit", limit:20, per:50, note:{ko:"회당 $50 · 합쳐서 연 20회",en:"$50 a visit · 20 combined"}},
+      {id:"massage", t:{ko:"마사지",en:"Massage"}, type:"money", limit:500, note:{ko:"회당 $30까지 · 의사 소견서 필요",en:"Up to $30 a visit · referral needed"}},
+      {id:"acu", t:{ko:"침술·자연요법",en:"Acupuncture & naturopathy"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30 · 합쳐서 연 20회",en:"$30 a visit · 20 combined"}},
+      {id:"vision", t:{ko:"안경·렌즈·라식",en:"Glasses, contacts, laser"}, type:"money", limit:125, years:2, note:{ko:"24개월마다",en:"Every 24 months"}},
+      {id:"eyeexam", t:{ko:"시력검사",en:"Eye exam"}, type:"money", limit:75, years:2, note:{ko:"24개월마다",en:"Every 24 months"}},
+      {id:"rx", t:{ko:"처방약",en:"Prescription drugs"}, type:"money", limit:5000, noTotal:true, note:{ko:"80% 보장 · 합계에서 제외",en:"80% covered · not in total"}}
+    ]
+  }
+};
+const PLAN_ORDER = ["utsu","utmsu","scsu","utgsu"];
+const UNC = (function(){
+  let cur = "utsu";
+  try { const s = localStorage.getItem("unclaimed-plan"); if (PLANS[s]) cur = s; } catch(e) {}
+  return {
+    plan: () => PLANS[cur],
+    id: () => cur,
+    set(id){
+      if (!PLANS[id] || id === cur) return;
+      cur = id;
+      try { localStorage.setItem("unclaimed-plan", id); } catch(e) {}
+      document.dispatchEvent(new CustomEvent("unc:plan", {detail:id}));
+    }
+  };
+})();
+function planTotal(p){ return p.B.filter(b => !b.noTotal).reduce((s,b) => s + (b.type === "visit" ? b.limit * b.per : b.limit), 0); }
+
+</script>
 </head>
 <body>
-<div class="bar"><span class="label"><span class="ko">2026–27 보험 연도 진행 중 · 치과 혜택 $800, 아직 안 쓰셨나요?</span><span class="en">2026–27 policy year now on · Have you used your $800 dental yet?</span></span></div>
+<div class="bar"><span class="label"><span class="ko">2026–27 보험 연도 진행 중 · 올해 받을 수 있는 혜택 최대 </span><span class="en">2026–27 policy year · up to </span><span data-pl="total"></span><span class="en"> in benefits this year</span> · <span data-pl="union"></span></span></div>
 <header class="top">
   <a class="logo" href="#top">Unclaimed</a>
   <nav class="menu label" aria-label="Sections">
@@ -180,18 +367,21 @@ footer{padding:48px 20px 56px}
     <a href="#where"><span class="ko">병원 안내</span><span class="en">Where to go</span></a>
     <a href="#dates"><span class="ko">기한</span><span class="en">Deadlines</span></a>
   </nav>
+  <div class="hdr-r">
+  <a class="pl-pill label" href="#campus"><span data-pl="union"></span> ▾</a>
   <nav class="lang" aria-label="Language">
     <a aria-current="page" href="index.html" hreflang="ko">KOR</a>
     <a href="en.html" hreflang="en">ENG</a>
   </nav>
+  </div>
 </header>
 
 <main id="top">
   <div class="hero">
     <div class="copy">
-      <div class="label"><span class="ko">U of T St. George 유학생을 위한 보험 가이드</span><span class="en">For U of T St. George international students</span></div>
+      <div class="label"><span class="ko">U of T 유학생을 위한 보험 가이드</span><span class="en">For U of T international students</span></div>
       <h1><span class="ko">이미 낸 보험,<br>끝까지 챙기세요.</span><span class="en">Claim what's<br>already yours.</span></h1>
-      <p><span class="ko">풀타임 학부 유학생이라면 학비를 낼 때 UHIP과 UTSU 플랜, 두 가지 보험에 이미 가입돼 있어요. 무엇이 보장되는지, 어디에 청구하는지 여기서 한 번에 확인하세요.</span><span class="en">As a full-time international undergrad, your tuition already includes two plans: UHIP and the UTSU Health &amp; Dental Plan. See what's covered and where to claim, in one place.</span></p>
+      <p><span class="ko">U of T 유학생이라면 학비를 낼 때 UHIP과 학생회 보험 플랜(<span data-pl="short"></span>), 두 가지 보험에 이미 가입돼 있어요. 무엇이 보장되는지, 어디에 청구하는지 여기서 한 번에 확인하세요.</span><span class="en">As a U of T international student, your fees already include two plans: UHIP and your student union plan (<span data-pl="short"></span>). See what's covered and where to claim, in one place.</span></p>
       <div class="cta">
         <a class="btn" href="#helper"><span class="ko">청구 도우미 바로가기</span><span class="en">Open claim helper</span></a>
         <a class="btn ghost" href="#tracker"><span class="ko">내 혜택 관리</span><span class="en">My benefit tracker</span></a>
@@ -199,17 +389,31 @@ footer{padding:48px 20px 56px}
     </div>
     <div class="visual" aria-hidden="true">
       <div class="cards">
-        <div class="card back"><div class="label">UTSU Health &amp; Dental</div><div class="row"><span class="big">$800</span><span class="label">Dental / yr</span></div></div>
+        <div class="card back"><div class="label">Student plan</div><div class="row"><span class="big">$800</span><span class="label">Dental / yr</span></div></div>
         <div class="card"><div class="label">UHIP · 2026–27</div><div class="row"><span class="big">$948</span><span class="label">Paid / yr</span></div></div>
       </div>
       <span class="stamp">Unclaimed</span>
     </div>
   </div>
 
+
+  <section id="campus" aria-labelledby="h-campus">
+    <div class="sec-head">
+      <h2 id="h-campus"><span class="ko">내 캠퍼스·과정 선택</span><span class="en">Choose your campus</span></h2>
+      <p><span class="ko">선택한 학생회 플랜 기준으로 보장 금액, 청구 도우미, 혜택 트래커, FAQ 답변이 모두 바뀌어요. UHIP은 모든 캠퍼스가 같아요.</span><span class="en">Amounts, the claim helper, tracker and FAQ answers all follow the student plan you pick. UHIP is the same on every campus.</span></p>
+    </div>
+    <div class="grid pl-grid" role="group" aria-label="Student plan">
+      <button type="button" class="pl-opt" data-plan="utsu" aria-pressed="false"><span class="pl-u">UTSU</span><span class="pl-c"><span class="ko">St. George 학부</span><span class="en">St. George undergrad</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utsu"></span></span></button>
+      <button type="button" class="pl-opt" data-plan="utmsu" aria-pressed="false"><span class="pl-u">UTMSU</span><span class="pl-c"><span class="ko">Mississauga 학부</span><span class="en">Mississauga undergrad</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utmsu"></span></span></button>
+      <button type="button" class="pl-opt" data-plan="scsu" aria-pressed="false"><span class="pl-u">SCSU</span><span class="pl-c"><span class="ko">Scarborough 학부</span><span class="en">Scarborough undergrad</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="scsu"></span></span></button>
+      <button type="button" class="pl-opt" data-plan="utgsu" aria-pressed="false"><span class="pl-u">UTGSU</span><span class="pl-c"><span class="ko">대학원생</span><span class="en">Graduate students</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utgsu"></span></span></button>
+    </div>
+  </section>
+
   <section id="plans" aria-labelledby="h-plans">
     <div class="sec-head">
       <h2 id="h-plans"><span class="ko">나의 보험 두 가지</span><span class="en">Your two plans</span></h2>
-      <p><span class="ko">병원 진료는 UHIP이, 약·치과·안경·상담처럼 UHIP이 보장하지 않는 부분은 UTSU 플랜이 맡아요.</span><span class="en">UHIP is for doctors and hospitals. The UTSU plan fills the gaps: drugs, dental, glasses, counselling.</span></p>
+      <p><span class="ko">병원 진료는 UHIP이, 약·치과·안경·상담처럼 UHIP이 보장하지 않는 부분은 학생회 플랜이 맡아요.</span><span class="en">UHIP is for doctors and hospitals. Your student union plan fills the gaps: drugs, dental, glasses, counselling.</span></p>
     </div>
     <div class="grid g2">
       <article class="plan">
@@ -222,16 +426,7 @@ footer{padding:48px 20px 56px}
           <div><dt><span class="ko">연락처</span><span class="en">Contact</span></dt><dd>Cowan 1-833-377-8447</dd></div>
         </dl>
       </article>
-      <article class="plan">
-        <div class="plan-head"><h3>UTSU Plan</h3><span class="badge utsu"><span class="ko">학생회</span><span class="en">Student union</span></span></div>
-        <p class="who"><span class="ko">Health &amp; Dental · 운영: Studentcare(Alumo) · 청구처: GreenShield</span><span class="en">Health &amp; Dental · run by Studentcare (Alumo) · claims via GreenShield</span></p>
-        <dl class="spec">
-          <div><dt><span class="ko">보장 범위</span><span class="en">Covers</span></dt><dd><span class="ko">처방약 80%, 치과 연 $800, 시력검사·안경, 물리치료·마사지, 심리상담, 여행자 보험</span><span class="en">Drugs 80%, dental $800/yr, vision, physio &amp; massage, counselling, travel</span></dd></div>
-          <div><dt><span class="ko">회원 ID</span><span class="en">Member ID</span></dt><dd><span class="ko">"UTS" + 학번 (예: UTS1012345678)</span><span class="en">"UTS" + student number (e.g. UTS1012345678)</span></dd></div>
-          <div><dt><span class="ko">청구 방법</span><span class="en">Claims</span></dt><dd><span class="ko">GreenShield 웹사이트나 앱에서 온라인으로 청구해요. <strong>진료일로부터 12개월 안에</strong> 접수해야 해요.</span><span class="en">Online through GreenShield. Must arrive <strong>within 12 months</strong> of the service date.</span></dd></div>
-          <div><dt><span class="ko">연락처</span><span class="en">Contact</span></dt><dd>UTSU 416-978-4911 · hello@utsu.ca</dd></div>
-        </dl>
-      </article>
+      <article class="plan" id="sp-card"></article>
     </div>
   </section>
 
@@ -312,7 +507,7 @@ footer{padding:48px 20px 56px}
 <section id="tracker" aria-labelledby="h-tracker">
   <div class="sec-head">
     <h2 id="h-tracker"><span class="ko">내 혜택 관리</span><span class="en">My benefit tracker</span></h2>
-    <p><span class="ko">받은 진료를 기록하면 UTSU 플랜에서 남은 혜택과 청구 마감일을 계산해 드려요. 기록은 지금 쓰는 브라우저에만 저장돼요.</span><span class="en">Log the care you get and we'll show what's left on your UTSU plan and when each claim is due. Your log stays in this browser only.</span></p>
+    <p><span class="ko">받은 진료를 기록하면 선택한 학생회 플랜에서 남은 혜택과 청구 마감일을 계산해 드려요. 기록은 지금 쓰는 브라우저에만 저장돼요.</span><span class="en">Log the care you get and we'll show what's left on your student plan and when each claim is due. Your log stays in this browser only.</span></p>
   </div>
   <div class="tk-sum" id="tk-sum"></div>
   <div class="tk-list" id="tk-list"></div>
@@ -347,18 +542,9 @@ footer{padding:48px 20px 56px}
 const L = document.documentElement.dataset.lang === "en" ? "en" : "ko";
 const T = o => o[L];
 const KEY = "unclaimed-tracker-v1";
-const B = [
-  {id:"dental", t:{ko:"치과",en:"Dental"}, type:"money", limit:800, note:{ko:"검진·스케일링 70%, 충치 치료 60%",en:"Exams & cleanings 70%, fillings 60%"}},
-  {id:"mental", t:{ko:"심리상담",en:"Counselling"}, type:"visit", limit:15, per:100, note:{ko:"회당 최대 $100",en:"Up to $100 a visit"}},
-  {id:"physio", t:{ko:"물리치료",en:"Physiotherapy"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30",en:"$30 a visit"}},
-  {id:"chiro", t:{ko:"카이로프랙틱(척추 교정)",en:"Chiropractic"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30",en:"$30 a visit"}},
-  {id:"massage", t:{ko:"마사지·침술",en:"Massage & acupuncture"}, type:"visit", limit:20, per:30, note:{ko:"회당 $30 · 둘을 합쳐 연 20회",en:"$30 a visit · 20 combined"}},
-  {id:"vision", t:{ko:"안경·렌즈·시력검사",en:"Glasses, contacts, eye exam"}, type:"money", limit:150, years:2, note:{ko:"2년마다 합산",en:"Combined, every 2 years"}},
-  {id:"vaccine", t:{ko:"예방접종",en:"Vaccines"}, type:"money", limit:200, note:{ko:"100% 보장",en:"Covered 100%"}},
-  {id:"contra", t:{ko:"피임약·피임기구",en:"Contraceptives"}, type:"money", limit:250, note:{ko:"연간 한도",en:"Annual limit"}},
-  {id:"rx", t:{ko:"처방약",en:"Prescription drugs"}, type:"money", limit:5000, noTotal:true, note:{ko:"80% 보장 · 합계에서 제외",en:"80% covered · not in total"}}
-];
-const BY = Object.fromEntries(B.map(b => [b.id, b]));
+let B = UNC.plan().B;
+let BY = Object.fromEntries(B.map(b => [b.id, b]));
+const ANY = {}; PLAN_ORDER.forEach(k => PLANS[k].B.forEach(b => { if (!ANY[b.id]) ANY[b.id] = b; }));
 
 /* ---------- pure helpers (dates are local, YYYY-MM-DD) ---------- */
 function parseD(s){ const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); }
@@ -373,14 +559,14 @@ function money(n){ return "$" + Math.round(n).toLocaleString("en-CA"); }
 let entries = [];
 function load(){ try { const v = JSON.parse(localStorage.getItem(KEY) || "[]"); if (Array.isArray(v)) entries = v.filter(valid); } catch(e) { entries = []; } }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(entries)); return true; } catch(e) { return false; } }
-function valid(e){ return e && BY[e.b] && /^\d{4}-\d{2}-\d{2}$/.test(e.date) && typeof e.amt === "number" && isFinite(e.amt) && e.amt >= 0; }
+function valid(e){ return e && typeof e.b === "string" && ANY[e.b] && /^\d{4}-\d{2}-\d{2}$/.test(e.date) && typeof e.amt === "number" && isFinite(e.amt) && e.amt >= 0; }
 
 /* ---------- calculations ---------- */
 function usage(today){
   const cur = pyStart(today);
   const used = Object.fromEntries(B.map(b => [b.id, 0]));
   entries.forEach(e => {
-    const b = BY[e.b], py = pyStart(parseD(e.date));
+    const b = BY[e.b]; if (!b) return; const py = pyStart(parseD(e.date));
     const inWindow = b.years ? (py <= cur && py > cur - b.years) : py === cur;
     if (inWindow) used[e.b] += e.amt;
   });
@@ -448,8 +634,8 @@ function render(){
   const thead = el("thead"); thead.append(head); tbl.append(thead);
   const tb = el("tbody");
   [...entries].sort((a,b) => b.date.localeCompare(a.date)).forEach(e => {
-    const b = BY[e.b], d = parseD(e.date), dl = deadline(d), st = status(e, today);
-    const tr = el("tr", pyStart(d) !== cur && !(b.years && pyStart(d) > cur - b.years) ? "old" : "");
+    const b = BY[e.b] || ANY[e.b], d = parseD(e.date), dl = deadline(d), st = status(e, today);
+    const tr = el("tr", !BY[e.b] || (pyStart(d) !== cur && !(b.years && pyStart(d) > cur - b.years)) ? "old" : "");
     tr.append(el("td",null,fmtD(d)), el("td",null,T(b.t)), el("td",null, b.type === "visit" ? T({ko:`${e.amt}회`,en:`${e.amt} visit${e.amt === 1 ? "" : "s"}`}) : money(e.amt)), el("td",null,fmtD(dl)));
     const stTd = el("td"); stTd.append(el("span","st "+st.cls,st.txt)); tr.append(stTd);
     const act = el("td"); const acts = el("div","tk-acts");
@@ -475,7 +661,8 @@ function render(){
 
 /* ---------- form ---------- */
 const sel = $("tk-b"), dIn = $("tk-d"), aIn = $("tk-a"), cIn = $("tk-c"), msg = $("tk-msg");
-B.forEach(b => { const o = el("option", null, T(b.t)); o.value = b.id; sel.append(o); });
+function buildOpts(){ sel.innerHTML = ""; B.forEach(b => { const o = el("option", null, T(b.t)); o.value = b.id; sel.append(o); }); }
+buildOpts();
 function syncForm(){
   const b = BY[sel.value];
   if (b.type === "visit") {
@@ -541,6 +728,7 @@ $("tk-clear").addEventListener("click", ev => {
   armed = setTimeout(() => { armed = null; btn.firstElementChild.textContent = "전체 삭제"; btn.lastElementChild.textContent = "Clear all"; }, 4000);
 });
 
+document.addEventListener("unc:plan", () => { B = UNC.plan().B; BY = Object.fromEntries(B.map(b => [b.id, b])); buildOpts(); syncForm(); render(); });
 load(); render();
 window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
 })();
@@ -551,14 +739,7 @@ window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
       <h2 id="h-perks"><span class="ko">놓치기 쉬운 숨은 혜택</span><span class="en">Benefits people forget</span></h2>
       <p><span class="ko">보험 연도는 9월 1일부터 다음 해 8월 31일까지예요. 쓰지 않은 혜택은 다음 해로 넘어가지 않아요.</span><span class="en">Policy year runs Sept 1 to Aug 31. Unused amounts don't roll over.</span></p>
     </div>
-    <div class="grid g3">
-      <div class="item"><div class="img"><span class="tag">Best</span><span class="num">$800</span></div><div class="meta"><p class="name"><span class="ko">치과</span><span class="en">Dental</span></p><p class="desc"><span class="ko">검진·스케일링 70% · 1년에 한 번은 꼭 받으세요</span><span class="en">Exams &amp; cleanings 70% · go once a year</span></p></div></div>
-      <div class="item"><div class="img"><span class="num">$100×15</span></div><div class="meta"><p class="name"><span class="ko">심리상담</span><span class="en">Counselling</span></p><p class="desc"><span class="ko">회당 최대 $100 · 연 15회</span><span class="en">Up to $100 a visit · 15 a year</span></p></div></div>
-      <div class="item"><div class="img"><span class="num">$30×20</span></div><div class="meta"><p class="name"><span class="ko">물리치료 · 카이로프랙틱 · 마사지</span><span class="en">Physio · Chiro · Massage</span></p><p class="desc"><span class="ko">회당 $30 · 항목별 연 20회 (마사지와 침술은 합산)</span><span class="en">$30 a visit · 20 a year each (massage + acupuncture share)</span></p></div></div>
-      <div class="item"><div class="img"><span class="num">$150</span></div><div class="meta"><p class="name"><span class="ko">안경 · 렌즈 · 시력검사</span><span class="en">Glasses · Contacts · Eye exam</span></p><p class="desc"><span class="ko">2년마다 합산 $150</span><span class="en">$150 combined every two years</span></p></div></div>
-      <div class="item"><div class="img"><span class="tag dark">100%</span><span class="num">$200</span></div><div class="meta"><p class="name"><span class="ko">예방접종</span><span class="en">Vaccines</span></p><p class="desc"><span class="ko">100% · 연 최대 $200</span><span class="en">100% · up to $200 a year</span></p></div></div>
-      <div class="item"><div class="img"><span class="num">$250</span></div><div class="meta"><p class="name"><span class="ko">피임약 · 피임기구</span><span class="en">Contraceptives</span></p><p class="desc"><span class="ko">연 $250까지</span><span class="en">Up to $250 a year</span></p></div></div>
-    </div>
+    <div class="grid g3" id="perk-grid"></div>
   </section>
 
   <section id="where" aria-labelledby="h-where">
@@ -567,7 +748,7 @@ window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
       <p><span class="ko">온타리오에서는 먼저 일반 진료를 받고, 필요하면 의뢰서(referral)를 받아 전문의에게 가요.</span><span class="en">In Ontario you start with primary care, then get a referral to a specialist if needed.</span></p>
     </div>
     <div class="grid g4">
-      <div class="stop"><span class="when"><span class="ko">가벼운 증상</span><span class="en">Minor</span></span><h3><span class="ko">비대면 진료 · Dialogue</span><span class="en">Virtual care · Dialogue</span></h3><p><span class="ko">UTSU 플랜에 포함돼 있어요. 간호사·의사·전문의와 비대면으로 상담할 수 있어요.</span><span class="en">Included in the UTSU plan. Virtual visits with nurses, doctors, specialists.</span></p></div>
+      <div class="stop"><span class="when"><span class="ko">가벼운 증상</span><span class="en">Minor</span></span><h3><span class="ko">약국·비대면 상담</span><span class="en">Pharmacy &amp; virtual care</span></h3><p id="where-minor"></p></div>
       <div class="stop"><span class="when"><span class="ko">대부분의 경우</span><span class="en">Most cases</span></span><h3><span class="ko">워크인 클리닉</span><span class="en">Walk-in clinic</span></h3><p><span class="ko">예약 없이 가는 동네 의원이에요. <a href="https://medimap.ca">Medimap</a>에서 대기 시간을 확인하고 온라인으로 줄을 설 수 있어요.</span><span class="en">No appointment needed. Check waits and join the line on <a href="https://medimap.ca">Medimap</a>.</span></p></div>
       <div class="stop"><span class="when"><span class="ko">전문 진료</span><span class="en">Specialist</span></span><h3><span class="ko">의뢰서 → 전문의</span><span class="en">Referral → specialist</span></h3><p><span class="ko">워크인 의사나 가정의가 의뢰서를 써 주면 전문의를 만날 수 있어요. UHIP으로 보장돼요.</span><span class="en">Your walk-in or family doctor refers you. Covered by UHIP.</span></p></div>
       <div class="stop alert"><span class="when"><span class="ko">응급</span><span class="en">Emergency</span></span><h3>911 · <span class="ko">응급실</span><span class="en">ER</span></h3><p><span class="ko">생명이 위험하면 바로 911에 전화하세요. 입원했다면 48시간 안에 Cowan에 알려야 해요.</span><span class="en">Call 911 if life-threatening. If admitted, tell Cowan within 48 hours.</span></p></div>
@@ -579,10 +760,10 @@ window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
       <h2 id="h-dates"><span class="ko">꼭 기억해야 할 기한</span><span class="en">Deadlines</span></h2>
     </div>
     <div class="dates">
-      <div class="date"><div class="d"><span class="ko">진료일 + 12개월</span><span class="en">Service date + 12 months</span></div><div><p><span class="ko">UTSU 플랜(GreenShield) 청구 마감이에요. 영수증은 받자마자 사진으로 남겨 두세요.</span><span class="en">Deadline for GreenShield to receive a UTSU plan claim. Photograph receipts right away.</span></p></div></div>
+      <div class="date"><div class="d"><span class="ko">진료일 + 12개월</span><span class="en">Service date + 12 months</span></div><div><p><span class="ko">학생회 플랜(GreenShield) 청구 마감이에요. 영수증은 받자마자 사진으로 남겨 두세요.</span><span class="en">Deadline for GreenShield to receive a student plan claim. Photograph receipts right away.</span></p></div></div>
       <div class="date"><div class="d"><span class="ko">입원 후 48시간</span><span class="en">48 hrs after admission</span></div><div><p><span class="ko">병원에 입원했다면 Cowan(1-833-377-8447)에 알려야 해요.</span><span class="en">Notify Cowan (1-833-377-8447) if you're admitted to hospital.</span></p></div></div>
-      <div class="date"><div class="d"><span class="ko">2027. 1. 6 – 1. 29</span><span class="en">Jan 6 – 29, 2027</span></div><div><p><span class="ko">겨울학기 입학생의 UTSU 플랜 변경·탈퇴(opt-out) 신청 기간</span><span class="en">UTSU change-of-coverage and opt-out period for Winter-start students</span></p><p class="sub"><span class="ko">가을학기 입학생 신청 기간(2026. 9. 8 – 10. 2)은 이미 끝났어요. 건강 보험 부분을 탈퇴하려면 다른 보험에 가입돼 있다는 증명이 필요해요.</span><span class="en">The Fall period (Sept 8 – Oct 2, 2026) has ended. Opting out of health needs proof of other coverage.</span></p></div></div>
-      <div class="date"><div class="d"><span class="ko">매년 9월 1일</span><span class="en">Every Sept 1</span></div><div><p><span class="ko">새 보험 연도가 시작돼요. 치과 $800, 상담 15회 같은 한도가 다시 채워져요.</span><span class="en">New policy year. Dental, counselling and other limits reset.</span></p></div></div>
+      <div class="date" id="date-opt"></div>
+      <div class="date"><div class="d"><span class="ko">매년 9월 1일</span><span class="en">Every Sept 1</span></div><div><p><span class="ko">새 보험 연도가 시작돼요. 치과·상담 같은 연간 한도가 다시 채워져요.</span><span class="en">New policy year. Dental, counselling and other limits reset.</span></p></div></div>
     </div>
   </section>
 </main>
@@ -596,7 +777,7 @@ window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
   <div class="fcols">
     <div>
       <div class="label">About</div>
-      <p class="fine"><span class="ko">Unclaimed는 학생이 만든 비공식 가이드로, U of T·UTSU·Cowan·GreenShield와는 관련이 없어요. 2026년 11월 기준 공식 자료를 바탕으로 정리했으니, 실제 보장 여부는 꼭 보험사에 확인하세요.</span><span class="en">Unclaimed is an unofficial student-made guide, not affiliated with U of T, UTSU, Cowan or GreenShield. Based on official pages as of November 2026. Always confirm coverage with the insurer.</span></p>
+      <p class="fine"><span class="ko">Unclaimed는 학생이 만든 비공식 가이드로, U of T, 각 학생회(UTSU·UTMSU·SCSU·UTGSU), Cowan, GreenShield와는 관련이 없어요. 2026년 11월 기준 공식 자료를 바탕으로 정리했으니, 실제 보장 여부는 꼭 보험사에 확인하세요.</span><span class="en">Unclaimed is an unofficial student-made guide, not affiliated with U of T, any student union (UTSU, UTMSU, SCSU, UTGSU), Cowan or GreenShield. Based on official pages as of November 2026. Always confirm coverage with the insurer.</span></p>
     </div>
     <div>
       <div class="label">Sources</div>
@@ -604,6 +785,9 @@ window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
         <li><a href="https://www.utsu.ca/health/">UTSU Health &amp; Dental Plan</a></li>
         <li><a href="https://internationalexperience.utoronto.ca/international-student-services/university-health-insurance-plan-uhip/healthcare-at-uoft-uhip/what-is-covered">U of T CIE · UHIP coverage</a></li>
         <li><a href="https://studentcare.ca/plan/en-CA/IHaveAPlan_UTSU/faq">Studentcare · UTSU FAQ</a></li>
+        <li><a href="https://www.greenshield.ca/en-ca/student-centre/u-of-toronto-mississsauga-campus-utm">GreenShield · UTMSU 2026–27</a></li>
+        <li><a href="https://www.scsu.ca/health-dental">SCSU Health &amp; Dental (2026–27 booklet)</a></li>
+        <li><a href="https://utgsu.alumo.ca/">Alumo · UTGSU plan</a></li>
       </ul>
     </div>
     <div>
@@ -619,260 +803,237 @@ window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
 </footer>
 
 <script>
-const UHIP = {ko:"UHIP", en:"UHIP"}, UTSU = {ko:"UTSU 플랜", en:"UTSU plan"};
-const S = [
- {id:"doctor", ic:"🩺", t:{ko:"감기·일반 진료", en:"Doctor / walk-in visit"},
-  plans:["uhip"],
-  cov:[[{ko:"의사 진료비",en:"Physician fees"},{ko:"OHIP 수가의 최대 125%",en:"Up to 125% of OHIP rate"}],
-       [{ko:"전문간호사(NP) 진료",en:"Nurse practitioner"},{ko:"보장",en:"Covered"}],
-       [{ko:"연 1회 건강검진",en:"One annual health exam"},{ko:"보장",en:"Covered"}]],
-  steps:[{ko:"접수할 때 UHIP 카드(앱)를 보여 주세요.",en:"Show your UHIP card (digital is fine) at check-in."},
-         {ko:"클리닉이 Cowan에 직접 청구하면 따로 할 일은 없어요.",en:"If the clinic bills Cowan directly, you're done."},
-         {ko:"진료비를 직접 냈다면 영수증을 받아 clients.cowangroup.ca에서 청구하세요.",en:"If you paid, get a receipt and claim at clients.cowangroup.ca."}],
-  notes:[{ko:"처방받은 약값은 UHIP이 아니라 UTSU 플랜으로 청구해요.",en:"Prescriptions from the visit go to the UTSU plan, not UHIP."},
-         {ko:"가벼운 증상이라면 UTSU 플랜에 포함된 Dialogue 비대면 진료도 이용해 보세요.",en:"For minor issues, try Dialogue virtual care from the UTSU plan."}]},
- {id:"rx", ic:"💊", t:{ko:"처방약", en:"Prescription drugs"},
-  plans:["utsu"],
-  cov:[[{ko:"처방약",en:"Prescription drugs"},{ko:"80% · 연 최대 $5,000",en:"80% · up to $5,000/yr"}],
-       [{ko:"인슐린·주사제 등",en:"Insulin, injectables"},{ko:"보장",en:"Covered"}]],
-  steps:[{ko:"약국에 GreenShield 회원 번호(UTS+학번)를 알려 주세요.",en:"Give the pharmacy your GreenShield member ID (UTS + student number)."},
-         {ko:"약국에서 바로 처리해 주면 20%만 내면 돼요.",en:"If the pharmacy bills directly, you pay only the 20%."},
-         {ko:"전액을 냈다면 영수증으로 GreenShield에 온라인 청구하세요.",en:"If you paid in full, claim online with GreenShield using your receipt."}],
-  notes:[{ko:"UHIP은 입원 중에 투여한 약만 보장해요.",en:"UHIP only covers drugs given during a hospital stay."}]},
- {id:"dental", ic:"🦷", t:{ko:"치과", en:"Dental"},
-  plans:["utsu"],
-  cov:[[{ko:"연간 한도",en:"Annual maximum"},{ko:"$800",en:"$800"}],
-       [{ko:"검진·X-ray",en:"Exams & X-rays"},{ko:"70%",en:"70%"}],
-       [{ko:"스케일링·폴리싱",en:"Scaling & polishing"},{ko:"70%",en:"70%"}],
-       [{ko:"검사·발치",en:"Lab tests & extractions"},{ko:"80%",en:"80%"}],
-       [{ko:"충치 치료·신경 치료·수술",en:"Fillings, root canals, surgery"},{ko:"60%",en:"60%"}]],
-  steps:[{ko:"예약할 때 GreenShield로 바로 청구해 주는지 물어보세요.",en:"When booking, ask if they bill GreenShield directly."},
-         {ko:"바로 청구해 주는 곳이면 본인 부담금만 내면 돼요.",en:"If they do, you pay only your share."},
-         {ko:"아니라면 영수증을 받아 12개월 안에 GreenShield에 직접 청구하세요.",en:"If not, claim with your receipt within 12 months."}],
-  notes:[{ko:"UHIP은 일반 치과 치료를 보장하지 않아요.",en:"UHIP does not cover regular dental care."},
-         {ko:"검진·폴리싱·불소 도포는 12개월에 한 번, 바이트윙 X-ray는 9개월에 한 번까지 보장돼요.",en:"Exams, polishing and fluoride: once per 12 months. Bitewing X-rays: once per 9 months."}]},
- {id:"eye", ic:"👓", t:{ko:"시력검사·안경·렌즈", en:"Eye exam, glasses, contacts"},
-  plans:["utsu"],
-  cov:[[{ko:"시력검사+안경+렌즈 합산",en:"Exam + glasses + contacts"},{ko:"2년마다 합산 $150",en:"$150 combined / 2 yrs"}],
-       [{ko:"Studentcare 제휴 안경점(Vision Network)",en:"Studentcare Vision Network"},{ko:"최대 30% 또는 $75 할인",en:"Up to 30% or $75 off"}]],
-  steps:[{ko:"영수증과 (필요하면) 시력 처방전을 챙겨 두세요.",en:"Keep the receipt and your prescription if needed."},
-         {ko:"GreenShield에 온라인으로 청구하세요.",en:"Claim online with GreenShield."}],
-  notes:[{ko:"UHIP 시력검사는 19세 이하이거나 특정 눈 질환이 있을 때만 보장돼요. 안경은 UHIP에서 보장하지 않아요.",en:"UHIP eye exams are only for age 19 and under or certain eye conditions. UHIP never covers glasses."}]},
- {id:"physio", ic:"🦵", t:{ko:"물리치료·마사지·카이로프랙틱", en:"Physio, massage, chiro"},
-  plans:["utsu"],
-  cov:[[{ko:"물리치료",en:"Physiotherapy"},{ko:"회당 $30 · 연 20회",en:"$30/visit · 20/yr"}],
-       [{ko:"카이로프랙틱(척추 교정)",en:"Chiropractic"},{ko:"회당 $30 · 연 20회",en:"$30/visit · 20/yr"}],
-       [{ko:"마사지(RMT)·침술",en:"Massage (RMT) & acupuncture"},{ko:"회당 $30 · 둘을 합쳐 연 20회",en:"$30/visit · 20/yr combined"}]],
-  steps:[{ko:"등록된(Registered) 치료사인지 확인하세요.",en:"Make sure the practitioner is registered."},
-         {ko:"영수증을 받아 GreenShield에 청구하세요.",en:"Get a receipt and claim with GreenShield."}],
-  notes:[{ko:"회당 $30까지만 보장되고 나머지는 본인 부담이에요. 가격을 미리 확인하세요.",en:"Only $30 per visit is covered; you pay the rest. Ask the price first."},
-         {ko:"UHIP 물리치료는 사전 승인이 필요하고, 20~64세의 가벼운 부상은 대상이 아니에요.",en:"UHIP physio needs pre-approval and excludes non-complex injuries for ages 20–64."}]},
- {id:"mental", ic:"💬", t:{ko:"심리상담", en:"Counselling"},
-  plans:["utsu"],
-  cov:[[{ko:"정신건강 전문가 상담",en:"Mental health practitioners"},{ko:"회당 $100 · 연 15회",en:"$100/visit · 15/yr"}],
-       [{ko:"Empower Me 24시간 상담",en:"Empower Me 24/7 support"},{ko:"무료",en:"Free"}]],
-  steps:[{ko:"상담료와 상담사 자격을 미리 확인하세요.",en:"Check the fee and the counsellor's credentials first."},
-         {ko:"영수증으로 GreenShield에 청구하세요.",en:"Claim with GreenShield using your receipt."}],
-  notes:[{ko:"급할 때는 UTSU 플랜에 포함된 Empower Me로 바로 상담받을 수 있어요.",en:"For urgent support, Empower Me is included in the UTSU plan."}]},
- {id:"er", ic:"🚑", t:{ko:"응급실·입원", en:"ER & hospital stay"},
-  plans:["uhip","utsu"],
-  cov:[[{ko:"응급 입원(일반 병실)",en:"Emergency stay, standard ward"},{ko:"첫 4일 100%",en:"100% for first 4 days"}],
-       [{ko:"구급차(온타리오 내)",en:"Ambulance (Ontario)"},{ko:"$45 본인 부담 후 보장",en:"Covered less $45"}],
-       [{ko:"준개인실 업그레이드",en:"Semi-private room upgrade"},{ko:"UTSU 플랜",en:"UTSU plan"}]],
-  steps:[{ko:"UHIP 카드를 보여 주세요.",en:"Show your UHIP card."},
-         {ko:"입원했다면 48시간 안에 Cowan(1-833-377-8447)에 꼭 알리세요.",en:"If admitted, call Cowan (1-833-377-8447) within 48 hours."}],
-  notes:[{ko:"응급이 아닌 수술이나 치료는 Cowan의 사전 승인이 필요해요.",en:"Non-emergency surgery or treatment needs Cowan pre-approval."}]},
- {id:"lab", ic:"🧪", t:{ko:"혈액검사·X-ray·MRI", en:"Blood work, X-ray, MRI"},
-  plans:["uhip"],
-  cov:[[{ko:"의사·전문간호사(NP)가 의뢰한 검사",en:"Tests ordered by a doctor or NP"},{ko:"OHIP 수가의 100%",en:"100% of OHIP rate"}]],
-  steps:[{ko:"병원 밖 검사실이라면 Cowan 제휴 기관(Preferred Provider Network)인지 먼저 확인하세요.",en:"Outside a hospital, check that the lab is in Cowan's Preferred Provider Network."},
-         {ko:"UHIP 카드를 보여 주세요.",en:"Show your UHIP card."}],
-  notes:[{ko:"제휴 검사실이 아니면 보장되지 않을 수 있어요.",en:"Labs outside the network may not be covered."}]},
- {id:"vaccine", ic:"💉", t:{ko:"예방접종", en:"Vaccines"},
-  plans:["utsu"],
-  cov:[[{ko:"예방접종",en:"Vaccinations"},{ko:"100% · 연 최대 $200",en:"100% · up to $200/yr"}]],
-  steps:[{ko:"약국이나 클리닉에서 접종한 뒤 영수증을 받으세요.",en:"Get a receipt at the pharmacy or clinic."},
-         {ko:"GreenShield에 청구하세요.",en:"Claim with GreenShield."}],
-  notes:[]},
- {id:"travel", ic:"✈️", t:{ko:"캐나다 밖 여행 중", en:"Travelling outside Canada"},
-  plans:["utsu"],
-  cov:[[{ko:"여행 중 응급 의료비",en:"Emergency care on trips"},{ko:"여행 1회당 최대 120일",en:"Up to 120 days per trip"}],
-       [{ko:"평생 한도",en:"Lifetime maximum"},{ko:"$5,000,000",en:"$5,000,000"}],
-       [{ko:"UHIP (해외)",en:"UHIP (abroad)"},{ko:"외래 하루 $50 등 매우 제한적",en:"Very limited, e.g. $50/day outpatient"}]],
-  steps:[{ko:"출국 전에 UTSU 플랜 여행자 보험 정보를 저장해 두세요.",en:"Save your UTSU travel coverage details before you leave."},
-         {ko:"현지에서 진료받았다면 영수증과 진단서를 꼭 챙기세요.",en:"Keep receipts and medical notes if you see a doctor abroad."}],
-  notes:[{ko:"UHIP만으로는 해외 의료비를 거의 돌려받을 수 없어요. 방학에 한국에 갈 때도 마찬가지예요.",en:"UHIP alone barely covers care abroad, including visits home."},
-         {ko:"캐나다 안이라도 온타리오 밖이라면 UHIP은 응급 상황만 보장해요.",en:"Elsewhere in Canada, UHIP covers emergencies only."}]}
-];
-const CHECK = {
- uhip:[{ko:"UHIP 카드(앱) 또는 증권 번호",en:"UHIP card (app) or policy number"},{ko:"항목별 영수증(itemized receipt)",en:"Itemized receipt"},{ko:"Cowan 청구서(온라인 제출 시 자동 작성)",en:"Cowan claim form (built into the online portal)"}],
- utsu:[{ko:"회원 ID: UTS + 학번",en:"Member ID: UTS + student number"},{ko:"항목별 영수증과 진료 날짜",en:"Itemized receipt with service date"},{ko:"필요한 경우 처방전이나 의사 소견서",en:"Prescription or referral note, if required"},{ko:"진료일로부터 12개월 안에 제출",en:"Submit within 12 months of service"}]
-};
-const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const bi = o => `<span class="ko">${esc(o.ko)}</span><span class="en">${esc(o.en)}</span>`;
+const UHIP = {ko:"UHIP", en:"UHIP"};
+const tx = v => typeof v === "string" ? {ko:v, en:v} : v;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const bi = o => { o = tx(o); return `<span class="ko">${esc(o.ko)}</span><span class="en">${esc(o.en)}</span>`; };
+const money = n => "$" + Math.round(n).toLocaleString("en-CA");
+
+function buildS(p){
+  const sp = p.short;
+  const S = [
+   {id:"doctor", t:{ko:"감기·일반 진료", en:"Doctor / walk-in visit"}, plans:["uhip"],
+    cov:[[{ko:"의사 진료비",en:"Physician fees"},{ko:"OHIP 수가의 최대 125%",en:"Up to 125% of OHIP rate"}],
+         [{ko:"전문간호사(NP) 진료",en:"Nurse practitioner"},{ko:"보장",en:"Covered"}],
+         [{ko:"연 1회 건강검진",en:"One annual health exam"},{ko:"보장",en:"Covered"}]],
+    steps:[{ko:"접수할 때 UHIP 카드(앱)를 보여 주세요.",en:"Show your UHIP card (digital is fine) at check-in."},
+           {ko:"클리닉이 Cowan에 직접 청구하면 따로 할 일은 없어요.",en:"If the clinic bills Cowan directly, you're done."},
+           {ko:"진료비를 직접 냈다면 영수증을 받아 clients.cowangroup.ca에서 청구하세요.",en:"If you paid, get a receipt and claim at clients.cowangroup.ca."}],
+    notes:[{ko:`처방받은 약값은 UHIP이 아니라 ${sp.ko}으로 청구해요.`,en:`Prescriptions from the visit go to the ${sp.en}, not UHIP.`}].concat(p.virtual ? [p.virtual] : [])},
+   {id:"rx", t:{ko:"처방약", en:"Prescription drugs"}, plans:["sp"],
+    cov:p.rx,
+    steps:[{ko:`약국에 GreenShield 회원 번호(${p.idShort})를 알려 주세요.`,en:`Give the pharmacy your GreenShield member ID (${p.idFmt.en.split(" (")[0]}).`},
+           {ko:"약국에서 바로 처리해 주면 본인 부담분만 내면 돼요.",en:"If the pharmacy bills directly, you pay only your share."},
+           {ko:"전액을 냈다면 영수증으로 GreenShield에 온라인 청구하세요.",en:"If you paid in full, claim online with GreenShield using your receipt."}],
+    notes:[{ko:"UHIP은 입원 중에 투여한 약만 보장해요.",en:"UHIP only covers drugs given during a hospital stay."}]},
+   {id:"dental", t:{ko:"치과", en:"Dental"}, plans:["sp"],
+    cov:[[{ko:"연간 한도",en:"Annual maximum"},money(p.dentalMax)]].concat(p.dental),
+    steps:[{ko:"예약할 때 GreenShield로 바로 청구해 주는지 물어보세요.",en:"When booking, ask if they bill GreenShield directly."},
+           {ko:"바로 청구해 주는 곳이면 본인 부담금만 내면 돼요.",en:"If they do, you pay only your share."},
+           {ko:"아니라면 영수증을 받아 12개월 안에 GreenShield에 직접 청구하세요.",en:"If not, claim with your receipt within 12 months."}],
+    notes:[{ko:"UHIP은 일반 치과 치료를 보장하지 않아요.",en:"UHIP does not cover regular dental care."}].concat(p.dentalNote ? [p.dentalNote] : [])},
+   {id:"eye", t:{ko:"시력검사·안경·렌즈", en:"Eye exam, glasses, contacts"}, plans:["sp"],
+    cov:p.vision,
+    steps:[{ko:"영수증과 (필요하면) 시력 처방전을 챙겨 두세요.",en:"Keep the receipt and your prescription if needed."},
+           {ko:"GreenShield에 온라인으로 청구하세요.",en:"Claim online with GreenShield."}],
+    notes:[{ko:"UHIP 시력검사는 19세 이하이거나 특정 눈 질환이 있을 때만 보장돼요. 안경은 UHIP에서 보장하지 않아요.",en:"UHIP eye exams are only for age 19 and under or certain eye conditions. UHIP never covers glasses."}]},
+   {id:"physio", t:{ko:"물리치료·마사지·카이로프랙틱", en:"Physio, massage, chiro"}, plans:["sp"],
+    cov:p.para,
+    steps:[{ko:"등록된(Registered) 치료사인지 확인하세요.",en:"Make sure the practitioner is registered."},
+           {ko:"영수증을 받아 GreenShield에 청구하세요.",en:"Get a receipt and claim with GreenShield."}],
+    notes:[{ko:"회당 정해진 금액까지만 보장되고 나머지는 본인 부담이에요. 가격을 미리 확인하세요.",en:"Only a set amount per visit is covered; you pay the rest. Ask the price first."},
+           {ko:"UHIP 물리치료는 사전 승인이 필요하고, 20~64세의 가벼운 부상은 대상이 아니에요.",en:"UHIP physio needs pre-approval and excludes non-complex injuries for ages 20–64."}]},
+   {id:"mental", t:{ko:"심리상담", en:"Counselling"}, plans:["sp"],
+    cov:p.mental,
+    steps:[{ko:"상담료와 상담사 자격을 미리 확인하세요.",en:"Check the fee and the counsellor's credentials first."},
+           {ko:"영수증으로 GreenShield에 청구하세요.",en:"Claim with GreenShield using your receipt."}],
+    notes:[{ko:"캠퍼스 Health & Wellness 센터에서도 학생 상담을 받을 수 있어요.",en:"Your campus Health & Wellness Centre also offers counselling to students."}]},
+   {id:"er", t:{ko:"응급실·입원", en:"ER & hospital stay"}, plans:["uhip"],
+    cov:[[{ko:"응급 입원(일반 병실)",en:"Emergency stay, standard ward"},{ko:"첫 4일 100%",en:"100% for first 4 days"}],
+         [{ko:"구급차(온타리오 내)",en:"Ambulance (Ontario)"},{ko:"$45 본인 부담 후 보장",en:"Covered less $45"}]],
+    steps:[{ko:"UHIP 카드를 보여 주세요.",en:"Show your UHIP card."},
+           {ko:"입원했다면 48시간 안에 Cowan(1-833-377-8447)에 꼭 알리세요.",en:"If admitted, call Cowan (1-833-377-8447) within 48 hours."}],
+    notes:[{ko:"응급이 아닌 수술이나 치료는 Cowan의 사전 승인이 필요해요.",en:"Non-emergency surgery or treatment needs Cowan pre-approval."}]},
+   {id:"lab", t:{ko:"혈액검사·X-ray·MRI", en:"Blood work, X-ray, MRI"}, plans:["uhip"],
+    cov:[[{ko:"의사·전문간호사(NP)가 의뢰한 검사",en:"Tests ordered by a doctor or NP"},{ko:"OHIP 수가의 100%",en:"100% of OHIP rate"}]],
+    steps:[{ko:"병원 밖 검사실이라면 Cowan 제휴 기관(Preferred Provider Network)인지 먼저 확인하세요.",en:"Outside a hospital, check that the lab is in Cowan's Preferred Provider Network."},
+           {ko:"UHIP 카드를 보여 주세요.",en:"Show your UHIP card."}],
+    notes:[{ko:"제휴 검사실이 아니면 보장되지 않을 수 있어요.",en:"Labs outside the network may not be covered."}]},
+   {id:"vaccine", t:{ko:"예방접종", en:"Vaccines"}, plans:["sp"],
+    cov:p.vaccine || [[{ko:"예방접종",en:"Vaccinations"},{ko:"공식 안내에 별도 항목 없음",en:"Not listed separately"}]],
+    steps:[{ko:"약국이나 클리닉에서 접종한 뒤 영수증을 받으세요.",en:"Get a receipt at the pharmacy or clinic."},
+           {ko:"GreenShield에 청구하세요.",en:"Claim with GreenShield."}],
+    notes:p.vaccine ? [] : [{ko:`${sp.ko} 공식 안내에는 예방접종 항목이 따로 없어요. 접종 전에 GreenShield(1-888-525-7587)에 확인하세요.`,en:`The ${sp.en} summary doesn't list vaccines. Check with GreenShield (1-888-525-7587) first.`}]},
+   {id:"travel", t:{ko:"캐나다 밖 여행 중", en:"Travelling outside Canada"}, plans:["sp"],
+    cov:p.travel.concat([[{ko:"UHIP (해외)",en:"UHIP (abroad)"},{ko:"외래 하루 $50 등 매우 제한적",en:"Very limited, e.g. $50/day outpatient"}]]),
+    steps:[{ko:`출국 전에 ${sp.ko} 여행자 보험 정보를 저장해 두세요.`,en:`Save your ${sp.en} travel coverage details before you leave.`},
+           {ko:"현지에서 진료받았다면 영수증과 진단서를 꼭 챙기세요.",en:"Keep receipts and medical notes if you see a doctor abroad."}],
+    notes:[{ko:"UHIP만으로는 해외 의료비를 거의 돌려받을 수 없어요. 방학에 한국에 갈 때도 마찬가지예요.",en:"UHIP alone barely covers care abroad, including visits home."},
+           {ko:"캐나다 안이라도 온타리오 밖이라면 UHIP은 응급 상황만 보장해요.",en:"Elsewhere in Canada, UHIP covers emergencies only."}]}
+  ];
+  return S;
+}
+function checkFor(kind, p){
+  if (kind === "uhip") return [{ko:"UHIP 카드(앱) 또는 증권 번호",en:"UHIP card (app) or policy number"},{ko:"항목별 영수증(itemized receipt)",en:"Itemized receipt"},{ko:"Cowan 청구서(온라인 제출 시 자동 작성)",en:"Cowan claim form (built into the online portal)"}];
+  return [{ko:`회원 번호: ${p.idFmt.ko}`,en:`Member ID: ${p.idFmt.en}`},{ko:"항목별 영수증과 진료 날짜",en:"Itemized receipt with service date"},{ko:"필요한 경우 처방전이나 의사 소견서",en:"Prescription or referral note, if required"},{ko:"진료일로부터 12개월 안에 제출",en:"Submit within 12 months of service"}];
+}
+
+let S = buildS(UNC.plan());
 const H = {cov:{ko:"얼마나 보장되나요",en:"What's covered"},how:{ko:"청구 방법",en:"How to claim"},watch:{ko:"주의할 점",en:"Watch out"},check:{ko:"청구 전 체크리스트",en:"Before you claim"}};
 const chips = document.getElementById("chips"), result = document.getElementById("result");
 let current = "dental";
-S.forEach((s, i) => {
-  const b = document.createElement("button");
-  b.type = "button"; b.className = "opt"; b.id = "opt-" + s.id; b.dataset.id = s.id;
-  b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span>${bi(s.t)}</span>`;
-  b.addEventListener("click", () => select(s.id));
-  chips.appendChild(b);
-});
+function drawList(){
+  chips.innerHTML = "";
+  S.forEach((s, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.id = "opt-" + s.id; b.dataset.id = s.id;
+    b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span>${bi(s.t)}</span>`;
+    b.addEventListener("click", () => select(s.id));
+    chips.appendChild(b);
+  });
+}
 function select(id){
   current = id;
-  const s = S.find(x => x.id === id);
+  const p = UNC.plan(), s = S.find(x => x.id === id);
   chips.querySelectorAll(".opt").forEach(c => c.setAttribute("aria-pressed", c.dataset.id === id));
-  const badges = s.plans.map(p => `<span class="badge ${p}">${bi(p === "uhip" ? UHIP : UTSU)}</span>`).join("");
+  const badges = s.plans.map(k => `<span class="badge ${k === "uhip" ? "uhip" : "utsu"}">${bi(k === "uhip" ? UHIP : p.short)}</span>`).join("");
   const cov = s.cov.map(([a, b]) => `<li><span>${bi(a)}</span><b>${bi(b)}</b></li>`).join("");
   const steps = s.steps.map(x => `<li><span>${bi(x)}</span></li>`).join("");
   const notes = s.notes.map(x => `<div class="note">${bi(x)}</div>`).join("");
-  const check = CHECK[s.plans[0]].map((x, i) => `<li><label for="ck-${id}-${i}"><input type="checkbox" id="ck-${id}-${i}"><span>${bi(x)}</span></label></li>`).join("");
+  const check = checkFor(s.plans[0], p).map((x, i) => `<li><label for="ck-${id}-${i}"><input type="checkbox" id="ck-${id}-${i}"><span>${bi(x)}</span></label></li>`).join("");
   result.innerHTML = `<h3>${bi(s.t)}</h3><div class="badges">${badges}</div>
     <div class="block"><h4 class="label">${bi(H.cov)}</h4><ul class="cov">${cov}</ul></div>
     <div class="block"><h4 class="label">${bi(H.how)}</h4><ol class="steps">${steps}</ol></div>
     ${notes ? `<div class="block"><h4 class="label">${bi(H.watch)}</h4>${notes}</div>` : ""}
     <div class="block"><h4 class="label">${bi(H.check)}</h4><ul class="checklist">${check}</ul></div>`;
 }
-select(current);
+
+/* ---- plan-driven page parts ---- */
+function renderPlanParts(){
+  const p = UNC.plan();
+  document.querySelectorAll("[data-pl]").forEach(el => {
+    const k = el.dataset.pl;
+    const v = k === "short" ? p.short : k === "union" ? p.union : k === "who" ? p.who : k === "dental" ? money(p.dentalMax) : k === "total" ? money(planTotal(p)) : null;
+    if (v != null) el.innerHTML = bi(v);
+  });
+  document.querySelectorAll(".pl-opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.plan === p.id));
+  document.querySelectorAll("[data-sum]").forEach(el => { el.textContent = money(planTotal(PLANS[el.dataset.sum])); });
+  /* student plan card */
+  document.getElementById("sp-card").innerHTML = `
+    <div class="plan-head"><h3>${esc(p.union)} Plan</h3><span class="badge utsu">${bi({ko:"학생회",en:"Student union"})}</span></div>
+    <p class="who">${bi(p.admin)}</p>
+    <dl class="spec">
+      <div><dt>${bi({ko:"대상",en:"Who"})}</dt><dd>${bi(p.who)}</dd></div>
+      <div><dt>${bi({ko:"보장 범위",en:"Covers"})}</dt><dd>${bi(p.covers)}</dd></div>
+      <div><dt>${bi({ko:"회원 번호",en:"Member ID"})}</dt><dd>${bi(p.idFmt)}</dd></div>
+      <div><dt>${bi({ko:"청구 방법",en:"Claims"})}</dt><dd>${bi({ko:"GreenShield 웹사이트나 GreenShield+ 앱에서 온라인으로 청구해요. 진료일로부터 12개월 안에 접수해야 해요.",en:"Online through GreenShield or the GreenShield+ app. Claims must arrive within 12 months of the service date."})}</dd></div>
+      <div><dt>${bi({ko:"연락처",en:"Contact"})}</dt><dd>${esc(p.contact)}</dd></div>
+    </dl>`;
+  /* perks */
+  const perks = p.B.filter(b => !b.noTotal);
+  document.getElementById("perk-grid").innerHTML = perks.map((b, i) => {
+    const num = b.type === "visit" ? `$${b.per}×${b.limit}` : money(b.limit);
+    const tag = b.id === "dental" ? `<span class="tag">Best</span>` : "";
+    return `<div class="item"><div class="img">${tag}<span class="num">${num}</span></div><div class="meta"><p class="name">${bi(b.t)}</p><p class="desc">${bi(b.note)}</p></div></div>`;
+  }).join("");
+  /* where: minor */
+  document.getElementById("where-minor").innerHTML = bi({ko:"온타리오에서는 약사가 일부 가벼운 증상에 약을 처방할 수 있어요.", en:"In Ontario, pharmacists can prescribe for some minor ailments."}) + (p.virtual ? " " + bi(p.virtual) : "");
+  /* dates */
+  document.getElementById("date-opt").innerHTML = `<div class="d">${bi(p.optWinter)}</div><div><p>${bi({ko:`겨울학기 입학생의 ${p.short.ko} 변경·탈퇴(opt-out) 신청 기간`, en:`${p.short.en} change-of-coverage and opt-out period for Winter-start students`})}</p><p class="sub">${bi({ko:`가을학기 신청 기간(${p.optFall.ko})은 이미 끝났어요. 탈퇴하려면 다른 보험에 가입돼 있다는 증명이 필요해요.`, en:`The Fall period (${p.optFall.en}) has ended. Opting out needs proof of other coverage.`})}</p></div>`;
+  const hc = document.getElementById("hd-contact"); if (hc) hc.textContent = p.contact;
+}
+function onPlan(){
+  S = buildS(UNC.plan());
+  drawList();
+  select(S.find(x => x.id === current) ? current : "dental");
+  renderPlanParts();
+}
+document.querySelectorAll(".pl-opt").forEach(b => b.addEventListener("click", () => UNC.set(b.dataset.plan)));
+document.addEventListener("unc:plan", onPlan);
+drawList(); select(current); renderPlanParts();
 
 </script>
 
 
 <style>
-/* FAQ widget — messenger-style launcher (cream squircle) + rounded panel with Home / Chat tabs */
-.fq-fab{position:fixed;right:22px;bottom:22px;z-index:30;width:64px;height:64px;border-radius:22px;border:0;background:var(--cream);color:#8C8C8C;font:inherit;font-size:19px;font-weight:800;letter-spacing:-.01em;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.14);display:grid;place-items:center;transition:transform .15s ease}
-.fq-fab:hover{transform:translateY(-2px)}
-.fq-fab.open{background:#fff;color:var(--ink);border-radius:50%;font-size:26px;font-weight:400}
-.fq-panel{position:fixed;right:22px;bottom:100px;z-index:31;width:min(380px,calc(100vw - 28px));height:min(640px,calc(100vh - 124px));background:#F6F6F6;border-radius:30px;box-shadow:0 12px 44px rgba(0,0,0,.18);display:none;flex-direction:column;overflow:hidden;font-family:var(--font)}
-.fq-panel.open{display:flex}
-.fq-view{flex:1;overflow-y:auto;display:none;flex-direction:column}
-.fq-view.on{display:flex}
-.fq-ava{width:56px;height:56px;border-radius:50%;background:var(--cream);display:grid;place-items:center;font-size:8.5px;font-weight:800;letter-spacing:.02em;color:var(--ink);flex:none;border:1px solid rgba(0,0,0,.04)}
-.fq-ava.sm{width:36px;height:36px;font-size:5.6px}
-.fq-home{padding:26px 16px 16px;gap:12px}
-.fq-brand{display:flex;align-items:center;gap:14px;padding:0 8px 6px}
-.fq-brand h3{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
-.fq-brand button{font:inherit;font-size:12.5px;color:var(--muted);background:none;border:0;padding:0;cursor:pointer}
-.fq-card{background:#fff;border-radius:22px;padding:18px}
-.fq-hello{display:flex;gap:12px}
-.fq-hello .who{font-size:12px;font-weight:800;letter-spacing:.02em}
-.fq-hello p{margin:2px 0 0;font-size:13.5px;line-height:1.6}
-.fq-hello .tip{margin-top:10px;font-weight:800}
-.fq-hello ul{margin:4px 0 0;padding-left:16px;font-size:13px;line-height:1.7}
-.fq-cta{margin-top:16px;width:100%;font:inherit;font-size:14.5px;font-weight:800;background:var(--cream);color:var(--ink);border:0;border-radius:18px;padding:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
-.fq-cta:hover{filter:brightness(.97)}
-.fq-cta svg{width:17px;height:17px}
-.fq-time{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);margin-top:10px}
-.fq-other{display:grid;gap:10px}
-.fq-other .ttl{font-size:12.5px;color:var(--muted)}
-.fq-other a{display:flex;justify-content:space-between;align-items:center;text-decoration:none;font-size:13px;padding:2px 0}
-.fq-other a span:last-child{color:var(--muted);font-variant-numeric:tabular-nums}
-.fq-quick{display:flex;flex-wrap:wrap;gap:6px}
-.fq-foot{text-align:center;font-size:11.5px;color:#9a9a9a;padding:4px 0 2px}
-/* chat view */
-.fq-bar{display:flex;align-items:center;gap:10px;padding:14px 14px 12px;background:#F6F6F6;border-bottom:1px solid #EAEAEA}
-.fq-back{font:inherit;background:none;border:0;font-size:22px;line-height:1;cursor:pointer;padding:2px 6px;color:var(--ink)}
-.fq-bar .t{font-size:14px;font-weight:800}
-.fq-bar .s{font-size:11px;color:var(--muted)}
-.cb-log{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:10px}
-.cb-msg{max-width:84%;font-size:13.5px;line-height:1.6;padding:11px 14px;border-radius:18px}
-.cb-msg.bot{background:#fff;align-self:flex-start;border-top-left-radius:6px}
-.cb-msg.me{background:var(--cream);color:var(--ink);align-self:flex-end;border-top-right-radius:6px;white-space:pre-wrap;word-break:break-word}
-.cb-msg.alert{background:var(--ink);color:#fff}
-.cb-msg b{font-weight:800}
+/* Help-desk ticket FAQ — black ticket tab launcher + right drawer, square edges, mono meta, mint accents */
+.hd-tab{position:fixed;right:22px;bottom:22px;z-index:30;font:inherit;font-size:13px;font-weight:600;color:#fff;background:var(--ink);border:0;padding:13px 22px 13px 18px;cursor:pointer;display:flex;align-items:center;gap:10px;
+  -webkit-mask:radial-gradient(circle 7px at 0 50%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 7px at 100% 50%,#0000 98%,#000) right/51% 100% no-repeat;
+          mask:radial-gradient(circle 7px at 0 50%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 7px at 100% 50%,#0000 98%,#000) right/51% 100% no-repeat;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);transition:transform .15s ease}
+.hd-tab:hover{transform:translateY(-2px)}
+.hd-tab .q{font-family:var(--mono);font-weight:600;font-size:12px;border-right:1px dashed rgba(255,255,255,.4);padding-right:10px}
+.hd-dot{width:8px;height:8px;border-radius:50%;background:var(--mint-strong);box-shadow:0 0 0 3px rgba(31,166,107,.25)}
+.hd-tab.hide{display:none}
+.hd-shade{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.18);display:none}
+.hd-shade.open{display:block}
+.hd{position:fixed;top:0;right:0;bottom:0;z-index:31;width:min(410px,100vw);background:var(--bg);border-left:1px solid var(--ink);display:flex;flex-direction:column;transform:translateX(100%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s}
+.hd.open{transform:none;visibility:visible;transition:transform .25s ease}
+.hd-head{background:var(--ink);color:#fff;padding:14px 18px 12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.hd-head .t{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em}
+.hd-head .n{font-family:var(--mono);font-size:11px;color:#9a9a9a;margin-top:3px}
+.hd-x{font:inherit;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;width:30px;height:30px;font-size:16px;line-height:1;cursor:pointer;flex:none}
+.hd-x:hover{background:#fff;color:var(--ink)}
+.hd-sub{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px dashed var(--line);font-size:12px;color:var(--muted)}
+.hd-sub .live{display:flex;align-items:center;gap:7px}
+.hd-sub button{font:inherit;font-size:12px;font-weight:600;background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.cb-log{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:#FAFAF8}
+.cb-msg{max-width:90%;font-size:13.5px;line-height:1.65}
+.cb-msg.bot{align-self:flex-start;background:#fff;border:1px solid var(--line);padding:12px 14px 14px;position:relative}
+.cb-msg.bot::before{content:attr(data-meta);display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em;padding-bottom:8px;margin-bottom:8px;border-bottom:1px dashed var(--line)}
+.cb-msg.me{align-self:flex-end;background:var(--mint);color:var(--ink);padding:10px 14px;white-space:pre-wrap;word-break:break-word}
+.cb-msg.alert{background:var(--ink);color:#fff;border-color:var(--ink)}
+.cb-msg.alert::before{color:#bbb;border-color:#444}
+.cb-msg b{font-weight:700}
 .cb-msg ul{margin:6px 0 0;padding-left:16px}
-.cb-msg .more{font:inherit;font-size:12px;font-weight:800;margin-top:10px;background:var(--cream);color:var(--ink);border:0;border-radius:12px;padding:8px 12px;cursor:pointer;display:inline-block}
-.cb-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
-.cb-chip{font:inherit;font-size:12.5px;background:#fff;color:var(--ink);border:1px solid #E2E2E2;border-radius:999px;padding:7px 12px;cursor:pointer}
-.cb-chip:hover{border-color:var(--ink)}
-.cb-form{display:flex;gap:8px;padding:10px 12px 12px;background:#F6F6F6}
-.cb-form input{flex:1;min-width:0;font:inherit;font-size:13.5px;border:1px solid #E2E2E2;border-radius:999px;padding:12px 16px;background:#fff;color:var(--ink)}
-.cb-form input:focus{outline:none;border-color:var(--ink)}
-.cb-form button{width:44px;height:44px;border-radius:50%;border:0;background:var(--ink);color:#fff;cursor:pointer;display:grid;place-items:center;flex:none}
-.cb-form button svg{width:18px;height:18px}
-.fq-note{font-size:11px;color:#9a9a9a;text-align:center;padding:0 16px 6px}
-/* tabs */
-.fq-tabs{display:grid;grid-template-columns:repeat(3,1fr);background:#F6F6F6;padding:8px 6px 12px;border-top:1px solid #EAEAEA}
-.fq-tab{font:inherit;font-size:11.5px;background:none;border:0;cursor:pointer;color:#A3A3A3;display:grid;justify-items:center;gap:3px;padding:4px 0}
-.fq-tab svg{width:24px;height:24px}
-.fq-tab[aria-selected="true"]{color:var(--ink);font-weight:700}
-@media (max-width:480px){
-  .fq-panel{right:0;left:0;bottom:0;top:0;width:100%;height:100%;border-radius:0}
-  .fq-fab{right:14px;bottom:14px}
-  .fq-fab.open{z-index:32;top:12px;bottom:auto;right:12px;width:40px;height:40px;font-size:20px;box-shadow:none;background:transparent}
-}
+.cb-msg .more{font:inherit;font-size:12px;font-weight:600;margin-top:10px;background:var(--ink);color:#fff;border:0;padding:8px 12px;cursor:pointer;display:inline-flex;gap:6px}
+.cb-chips{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px 6px;background:#FAFAF8}
+.cb-chip{font:inherit;font-size:12.5px;background:#fff;color:var(--ink);border:1px solid var(--ink);padding:6px 11px;cursor:pointer}
+.cb-chip:hover{background:var(--mint)}
+.cb-form{display:flex;border-top:1px solid var(--ink)}
+.cb-form input{flex:1;min-width:0;font:inherit;font-size:13.5px;border:0;padding:15px 18px;background:var(--bg);color:var(--ink)}
+.cb-form input:focus{outline:none;background:#FAFAF8}
+.cb-form button{font:inherit;font-size:12px;font-weight:600;background:var(--ink);color:#fff;border:0;padding:0 20px;cursor:pointer}
+.hd-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 18px 14px;font-size:11px;color:var(--muted);border-top:1px dashed var(--line)}
+.hd-foot a{color:var(--muted);text-decoration:none;font-family:var(--mono)}
+@media (max-width:480px){.hd{border-left:0}.hd-tab{right:14px;bottom:14px}}
+@media (prefers-reduced-motion:reduce){.hd,.hd.open{transition:none}}
 </style>
 
-<button type="button" class="fq-fab" id="fq-fab" aria-controls="fq-panel" aria-expanded="false" aria-label="FAQ">FAQ</button>
-<div class="fq-panel" id="fq-panel" role="dialog" aria-label="Unclaimed FAQ">
-  <div class="fq-view fq-home on" id="fq-home">
-    <div class="fq-brand">
-      <div class="fq-ava" aria-hidden="true">UNCLAIMED</div>
-      <div><h3><span class="ko">언클레임드</span><span class="en">Unclaimed</span></h3><button type="button" id="fq-howto"><span class="ko">이용 안내 보기 ›</span><span class="en">How it works ›</span></button></div>
-    </div>
-    <div class="fq-card">
-      <div class="fq-hello">
-        <div class="fq-ava sm" aria-hidden="true">UNCLAIMED</div>
-        <div>
-          <div class="who">UNCLAIMED</div>
-          <p><span class="ko">안녕하세요! 💛</span><span class="en">Hi there! 💛</span></p>
-          <p><span class="ko">놓친 보험 혜택을 찾아 드리는 <b>UNCLAIMED</b>예요.</span><span class="en">I'm <b>UNCLAIMED</b>, here to help you find the benefits you're missing.</span></p>
-          <p class="tip">✧ <span class="ko">이런 걸 물어볼 수 있어요</span><span class="en">Ask me about</span></p>
-          <ul>
-            <li><span class="ko">치과·약·상담이 얼마나 보장되는지</span><span class="en">What dental, drugs and counselling cover</span></li>
-            <li><span class="ko">청구하는 방법과 마감 기한</span><span class="en">How and when to claim</span></li>
-            <li><span class="ko">아플 때 어디로 가야 하는지</span><span class="en">Where to go when you're sick</span></li>
-          </ul>
-        </div>
-      </div>
-      <button type="button" class="fq-cta" id="fq-start"><span class="ko">질문하기</span><span class="en">Ask a question</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 21 3l-8.5 18-2.2-7.3L3 11.5Z" fill="currentColor"/></svg></button>
-      <div class="fq-time"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="ko">24시간 자동 답변</span><span class="en">Instant answers, 24/7</span></div>
-    </div>
-    <div class="fq-card fq-other">
-      <div class="ttl"><span class="ko">자주 묻는 질문</span><span class="en">Popular questions</span></div>
-      <div class="fq-quick" id="fq-quick"></div>
-    </div>
-    <div class="fq-card fq-other">
-      <div class="ttl"><span class="ko">다른 방법으로 문의</span><span class="en">Other ways to ask</span></div>
-      <a href="https://www.utsu.ca/health/"><span><b>UTSU</b> · <span class="ko">UTSU 플랜</span><span class="en">UTSU plan</span></span><span>416-978-4911</span></a>
-      <a href="https://clients.cowangroup.ca"><span><b>Cowan</b> · UHIP</span><span>1-833-377-8447</span></a>
-    </div>
-    <div class="fq-foot"><span class="ko">FAQ 봇은 의료 진단을 하지 않으며, 대화 내용은 저장되지 않아요</span><span class="en">This bot doesn't diagnose, and chats aren't saved</span></div>
+<button type="button" class="hd-tab" id="hd-tab" aria-controls="hd" aria-expanded="false"><span class="q">FAQ</span><span><span class="ko">보험 질문하기</span><span class="en">Ask Unclaimed</span></span></button>
+<div class="hd-shade" id="hd-shade"></div>
+<aside class="hd" id="hd" role="dialog" aria-label="Unclaimed help desk">
+  <div class="hd-head">
+    <div><div class="t">UNCLAIMED HELP DESK</div><div class="n" id="hd-no">TICKET #0000</div></div>
+    <button type="button" class="hd-x" id="hd-x" aria-label="Close">✕</button>
   </div>
-
-  <div class="fq-view" id="fq-chat">
-    <div class="fq-bar">
-      <button type="button" class="fq-back" id="fq-back" aria-label="Back">‹</button>
-      <div class="fq-ava sm" aria-hidden="true">UNCLAIMED</div>
-      <div><div class="t">UNCLAIMED</div><div class="s"><span class="ko">바로 답변해 드려요</span><span class="en">Replies instantly</span></div></div>
-    </div>
-    <div class="cb-log" id="cb-log" aria-live="polite"></div>
-    <div class="cb-chips" id="cb-chips"></div>
-    <div class="fq-note"><span class="ko">학번 같은 개인정보는 입력하지 마세요</span><span class="en">Please don't share personal info like your student number</span></div>
-    <form class="cb-form" id="cb-form">
-      <label for="cb-in" style="position:absolute;left:-9999px">Message</label>
-      <input id="cb-in" autocomplete="off">
-      <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 21 3l-8.5 18-2.2-7.3L3 11.5Z" fill="currentColor"/></svg></button>
-    </form>
+  <div class="hd-sub">
+    <span class="live"><span class="ko">자동 답변 · 24시간</span><span class="en">Auto-reply · 24/7</span></span>
+    <button type="button" id="hd-track"><span class="ko">내 혜택 관리 →</span><span class="en">My benefits →</span></button>
   </div>
-
-  <div class="fq-tabs" role="tablist">
-    <button type="button" class="fq-tab" role="tab" id="fq-t-home" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1v-9.5Z" fill="currentColor"/></svg><span class="ko">홈</span><span class="en">Home</span></button>
-    <button type="button" class="fq-tab" role="tab" id="fq-t-chat" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4c4.7 0 8.5 3.1 8.5 7s-3.8 7-8.5 7c-1 0-2-.1-2.9-.4L5 19.5l1.2-3.4C4.6 14.8 3.5 13 3.5 11c0-3.9 3.8-7 8.5-7Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="8.5" cy="11" r="1.2" fill="currentColor"/><circle cx="12" cy="11" r="1.2" fill="currentColor"/><circle cx="15.5" cy="11" r="1.2" fill="currentColor"/></svg><span class="ko">대화</span><span class="en">Chat</span></button>
-    <button type="button" class="fq-tab" role="tab" id="fq-t-track" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="12" width="3.5" height="8" rx="1" fill="currentColor"/><rect x="10.25" y="7" width="3.5" height="13" rx="1" fill="currentColor"/><rect x="16.5" y="4" width="3.5" height="16" rx="1" fill="currentColor"/></svg><span class="ko">내 혜택</span><span class="en">My benefits</span></button>
+  <div class="cb-log" id="cb-log" aria-live="polite"></div>
+  <div class="cb-chips" id="cb-chips"></div>
+  <form class="cb-form" id="cb-form">
+    <label for="cb-in" style="position:absolute;left:-9999px">Message</label>
+    <input id="cb-in" autocomplete="off">
+    <button type="submit"><span class="ko">보내기</span><span class="en">Send</span></button>
+  </form>
+  <div class="hd-foot">
+    <span><span class="ko">진단하지 않으며 대화는 저장되지 않아요 · 개인정보 입력 금지</span><span class="en">No diagnosis · chats aren't saved · no personal info</span></span>
+    <span><span id="hd-contact">UTSU 416-978-4911</span> · <a href="https://clients.cowangroup.ca">Cowan 1-833-377-8447</a></span>
   </div>
-</div>
+</aside>
 
 <script>
 (function(){
 const L = document.documentElement.dataset.lang === "en" ? "en" : "ko";
 const T = o => o[L];
 const log = document.getElementById("cb-log"), chipsEl = document.getElementById("cb-chips");
-const panel = document.getElementById("fq-panel"), fab = document.getElementById("fq-fab");
+const panel = document.getElementById("hd"), tab = document.getElementById("hd-tab"), shade = document.getElementById("hd-shade");
 const input = document.getElementById("cb-in");
-input.placeholder = T({ko:"궁금한 걸 입력해 주세요", en:"Type a message"});
+input.placeholder = T({ko:"궁금한 걸 입력해 주세요", en:"Type your question"});
+document.getElementById("hd-no").textContent = "TICKET #" + String(Math.floor(1000 + Math.random() * 9000));
+function stamp(){ const d = new Date(); return "UNCLAIMED · " + String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); }
 const KW = {
   doctor:["감기","진료","의사","워크인","클리닉","가정의","몸살","열이","아파","아픈","walk-in","walk in","clinic","doctor","fever","cold","flu","sick","family doctor","gp"],
   rx:["처방","약국","약값","약 ","약을","약이","pharmacy","prescription","drug","medication","medicine","pills"],
@@ -901,7 +1062,7 @@ const EXTRA = [
   {id:"memberid", kw:["회원","아이디","카드","로그인","가입 번호","member id","member number","card","login","sign in","policy number"],
    a:{ko:"<b>UTSU 플랜</b> 회원 번호는 <b>\"UTS\" + 학번</b>이에요. GreenShield에 온라인으로 가입할 때 이 번호를 써요.<br><b>UHIP</b> 카드는 Cowan에서 발급해요. 보통 학교 이메일로 온 안내를 따라 앱이나 디지털 카드로 확인할 수 있어요.",
       en:"Your <b>UTSU plan</b> member ID is <b>\"UTS\" + your student number</b>. Use it to register with GreenShield online.<br>Your <b>UHIP</b> card comes from Cowan, usually as a digital card set up from the email sent to your school account."}},
-  {id:"optout", kw:["opt","옵트","빼고","탈퇴","안 쓰고 싶","환불","waive","refund","cancel","remove the plan"],
+  {id:"optout", kw:["opt out","opt-out","optout","탈퇴 기간","옵트아웃","opt","옵트","빼고","탈퇴","안 쓰고 싶","환불","waive","refund","cancel","remove the plan"],
    a:{ko:"UTSU 플랜은 정해진 기간에만 탈퇴(opt-out)할 수 있어요. <b>겨울학기 입학생은 2027년 1월 6~29일</b>이에요. 가을학기 입학생 신청 기간(2026년 9월 8일~10월 2일)은 이미 끝났어요.<br>건강 보험 부분을 탈퇴하려면 <b>다른 보험에 가입돼 있다는 증명</b>이 필요하고, 주정부 의료보험만으로는 인정되지 않아요. 치과 부분은 증명 없이도 탈퇴할 수 있어요. UHIP은 유학생 필수 보험이라 탈퇴할 수 없어요.",
       en:"You can only opt out of the UTSU plan during set periods. <b>Winter-start students: Jan 6–29, 2027.</b> The Fall period (Sept 8 – Oct 2, 2026) has ended.<br>Opting out of health needs <b>proof of other coverage</b>; provincial coverage alone doesn't count. Dental can be dropped without proof. UHIP is mandatory and can't be dropped."}, go:"dates"},
   {id:"cost", kw:["보험료","얼마 내","얼마를 내","비싸","가격","요금","premium","how much does uhip","cost of uhip","uhip cost","fee","price"],
@@ -926,6 +1087,25 @@ const EXTRA = [
    a:{ko:"천만에요! 또 궁금한 게 있으면 편하게 물어보세요.", en:"You're welcome! Ask anything else anytime."}}
 ];
 
+
+/* plan-aware answers */
+const _X = id => EXTRA.find(x => x.id === id);
+_X("compare").a = p => ({ko:`<b>UHIP</b>은 의사 진료, 응급실·입원, 각종 검사처럼 <b>병원 진료</b>를 보장해요. 모든 캠퍼스가 같아요.<br><b>${p.short.ko}</b>은 처방약, 치과, 안경, 물리치료, 심리상담처럼 <b>UHIP이 보장하지 않는 부분</b>을 맡아요. 올해 받을 수 있는 혜택은 최대 <b>${money(planTotal(p))}</b>(처방약 제외)예요.`,
+  en:`<b>UHIP</b> covers <b>doctors and hospitals</b>, the same on every campus.<br>The <b>${p.short.en}</b> covers what UHIP doesn't: prescriptions, dental, glasses, physio, counselling — up to <b>${money(planTotal(p))}</b> this year (excluding drugs).`});
+_X("claim").a = p => ({ko:`<b>UHIP</b>: 병원에서 보험 카드를 보여 주면 대부분 병원이 Cowan에 직접 청구해요. 진료비를 직접 냈다면 clients.cowangroup.ca에 영수증을 올리면 돼요.<br><b>${p.short.ko}</b>: GreenShield 웹사이트나 앱에서 영수증으로 온라인 청구해요. 회원 번호는 ${p.idFmt.ko}예요.<br>어떤 진료를 받았는지 알려 주시면 더 자세히 안내해 드릴게요.`,
+  en:`<b>UHIP</b>: most clinics bill Cowan directly when you show your card. If you paid, upload the receipt at clients.cowangroup.ca.<br><b>${p.short.en}</b>: claim online with GreenShield using your receipt. Your member ID is ${p.idFmt.en}.<br>Tell me what care you got and I'll be more specific.`});
+_X("deadline").a = p => ({ko:`<b>${p.short.ko}(GreenShield)</b>: 진료일로부터 <b>12개월 안에</b> 청구가 접수돼야 해요.<br><b>입원했을 때</b>: 입원 후 <b>48시간 안에</b> Cowan(1-833-377-8447)에 알려야 해요.<br>보험 연도는 매년 9월 1일에 새로 시작돼요.`,
+  en:`<b>${p.short.en} (GreenShield)</b>: claims must arrive <b>within 12 months</b> of the service date.<br><b>Hospital stay</b>: tell Cowan (1-833-377-8447) <b>within 48 hours</b> of admission.<br>The policy year resets every Sept 1.`});
+_X("memberid").a = p => ({ko:`<b>${p.short.ko}</b> 회원 번호는 <b>${p.idFmt.ko}</b>예요. GreenShield에 온라인으로 가입할 때 이 번호를 써요.<br><b>UHIP</b> 카드는 Cowan에서 발급해요. 보통 학교 이메일로 온 안내를 따라 앱이나 디지털 카드로 확인할 수 있어요.`,
+  en:`Your <b>${p.short.en}</b> member ID is <b>${p.idFmt.en}</b>. Use it to register with GreenShield online.<br>Your <b>UHIP</b> card comes from Cowan, usually as a digital card set up from the email sent to your school account.`});
+_X("optout").a = p => ({ko:`${p.short.ko}은 정해진 기간에만 탈퇴(opt-out)할 수 있어요. 가을학기 신청 기간(${p.optFall.ko})은 끝났고, <b>겨울학기 입학생은 ${p.optWinter.ko}</b>이에요.<br>탈퇴하려면 <b>다른 보험에 가입돼 있다는 증명</b>이 필요하고, 주정부 의료보험만으로는 인정되지 않아요. UHIP은 유학생 필수 보험이라 탈퇴할 수 없어요.`,
+  en:`You can only opt out of the ${p.short.en} during set periods. The Fall period (${p.optFall.en}) has ended; <b>Winter-start students: ${p.optWinter.en}</b>.<br>You need <b>proof of other coverage</b>; provincial coverage alone doesn't count. UHIP is mandatory and can't be dropped.`});
+_X("cost").a = p => ({ko:`2026-27년 <b>UHIP</b> 보험료는 대부분 유학생 기준 <b>12개월에 $948</b>예요. 작년($792)보다 20% 가까이 올랐어요.<br><b>${p.short.ko}</b> 요금은 학비와 함께 청구돼요. 정확한 금액은 ACORN 청구 내역에서 확인하세요.`,
+  en:`For 2026–27, most students pay <b>$948 for 12 months of UHIP</b>, up nearly 20% from $792.<br>The <b>${p.short.en}</b> fee is charged with tuition. Check ACORN for the exact amount.`});
+_X("virtual").a = p => p.virtual ? p.virtual : ({ko:`${p.short.ko} 공식 안내에는 비대면 진료가 따로 나와 있지 않아요. 가벼운 증상은 약국 약사에게 먼저 물어보세요. 온타리오에서는 약사가 일부 가벼운 증상에 약을 처방할 수 있어요.`, en:`The ${p.short.en} summary doesn't list virtual care. For minor issues, ask a pharmacist first; in Ontario they can prescribe for some minor ailments.`});
+_X("contra").a = p => p.contra ? ({ko:`<b>${p.short.ko}</b>에서 피임약과 피임기구를 <b>${p.contra.ko}</b>까지 보장해요. 약국에 GreenShield 회원 번호를 알려 주거나, 영수증으로 청구하세요.`, en:`The <b>${p.short.en}</b> covers contraceptives <b>${p.contra.en}</b>. Give the pharmacy your GreenShield ID, or claim with your receipt.`})
+  : ({ko:`${p.short.ko} 공식 안내에는 피임약 항목이 따로 나와 있지 않아요. 처방약으로 보장될 수 있으니 GreenShield(1-888-525-7587)에 확인하세요.`, en:`The ${p.short.en} summary doesn't list contraceptives separately. They may count as prescriptions; check with GreenShield (1-888-525-7587).`});
+_X("contact").a = p => ({ko:`<b>Cowan (UHIP)</b>: 1-833-377-8447<br><b>${p.union}</b>: ${p.contact.replace(p.union + " ", "")}<br><b>GreenShield (청구 문의)</b>: 1-888-525-7587`, en:`<b>Cowan (UHIP)</b>: 1-833-377-8447<br><b>${p.union}</b>: ${p.contact.replace(p.union + " ", "")}<br><b>GreenShield (claims)</b>: 1-888-525-7587`});
 const START = [
   {ko:"치과는 얼마나 보장돼?", en:"How much dental is covered?"},
   {ko:"약값은 어떻게 청구해?", en:"How do I claim prescriptions?"},
@@ -974,8 +1154,8 @@ function jump(id){
   if (window.innerWidth <= 480) close();
 }
 function answerSituation(s){
-  const plan = s.plans.map(p => p === "uhip" ? "UHIP" : T({ko:"UTSU 플랜", en:"UTSU plan"})).join(" + ");
-  const lines = s.cov.slice(0, 3).map(([a,b]) => `<li>${esc(T(a))}: <b>${esc(T(b))}</b></li>`).join("");
+  const plan = s.plans.map(p => p === "uhip" ? "UHIP" : T(UNC.plan().short)).join(" + ");
+  const lines = s.cov.slice(0, 4).map(([a,b]) => `<li>${esc(T(tx(a)))}: <b>${esc(T(tx(b)))}</b></li>`).join("");
   const tip = s.notes[0] ? `<br>${esc(T(s.notes[0]))}` : "";
   const d = add(`<b>${esc(T(s.t))}</b> → ${esc(plan)}<ul>${lines}</ul>${tip}`, "bot");
   d.appendChild(moreBtn(T({ko:"청구 방법 자세히 보기", en:"See how to claim"}), () => { if (typeof select === "function") select(s.id); jump("helper"); }));
@@ -1003,57 +1183,41 @@ function reply(raw){
   }
   if (best.type === "s") answerSituation(best.v);
   else {
-    const d = add(T(best.v.a), "bot");
+    const d = add(T(typeof best.v.a === "function" ? best.v.a(UNC.plan()) : best.v.a), "bot");
     if (best.v.go) d.appendChild(moreBtn(T({ko:"페이지에서 자세히 보기", en:"View on page"}), () => jump(best.v.go)));
   }
 }
 
+
+const _add = add;
+add = function(html, cls){ const d = _add(html, cls); if (cls.indexOf("bot") === 0) d.setAttribute("data-meta", stamp()); return d; };
 function ask(q){
   q = q.trim(); if (!q) return;
-  show("chat");
   add(q, "me");
   chipsEl.innerHTML = "";
   setTimeout(() => reply(q), 250);
 }
 let greeted = false;
-function show(v){
-  document.getElementById("fq-home").classList.toggle("on", v === "home");
-  document.getElementById("fq-chat").classList.toggle("on", v === "chat");
-  document.getElementById("fq-t-home").setAttribute("aria-selected", v === "home");
-  document.getElementById("fq-t-chat").setAttribute("aria-selected", v === "chat");
-  if (v === "chat") {
-    if (!greeted) {
-      greeted = true;
-      add(T({ko:"안녕하세요! UHIP이나 UTSU 플랜에서 무엇이 보장되는지, 어떻게 청구하는지 물어보세요. 아래 버튼을 눌러도 돼요.",
-             en:"Hi! Ask me what UHIP or the UTSU plan covers and how to claim. You can also tap a button below."}), "bot");
-      chips(START);
-    }
-    setTimeout(() => input.focus(), 50);
+function open(){
+  panel.classList.add("open"); shade.classList.add("open"); tab.classList.add("hide"); tab.setAttribute("aria-expanded","true");
+  if (!greeted) {
+    greeted = true;
+    add(T({ko:"안녕하세요! 놓친 보험 혜택을 찾아 드리는 <b>Unclaimed 헬프데스크</b>예요.<br>UHIP이나 UTSU 플랜에서 무엇이 보장되는지, 어떻게 청구하는지 물어보세요. 아래 버튼을 눌러도 돼요.",
+           en:"Hi! This is the <b>Unclaimed help desk</b>.<br>Ask what UHIP or the UTSU plan covers and how to claim, or tap a question below."}), "bot");
+    chips(START);
   }
+  setTimeout(() => input.focus(), 260);
 }
-function open(){ panel.classList.add("open"); fab.classList.add("open"); fab.textContent = "×"; fab.setAttribute("aria-expanded","true"); fab.setAttribute("aria-label","Close"); }
-function close(){ panel.classList.remove("open"); fab.classList.remove("open"); fab.textContent = "FAQ"; fab.setAttribute("aria-expanded","false"); fab.setAttribute("aria-label","FAQ"); fab.focus(); }
-fab.addEventListener("click", () => panel.classList.contains("open") ? close() : open());
-document.getElementById("fq-start").addEventListener("click", () => show("chat"));
-document.getElementById("fq-back").addEventListener("click", () => show("home"));
-document.getElementById("fq-t-home").addEventListener("click", () => show("home"));
-document.getElementById("fq-t-chat").addEventListener("click", () => show("chat"));
-document.getElementById("fq-t-track").addEventListener("click", () => jump("tracker"));
-document.getElementById("fq-howto").addEventListener("click", () => {
-  show("chat");
-  add(T({ko:"<b>이용 안내</b><br>Unclaimed FAQ 봇은 U of T St. George 유학생을 위한 UHIP·UTSU 플랜 공식 정보(2026년 11월 기준)를 바탕으로 자동으로 답해요. 의료 진단은 하지 않고, 대화 내용은 저장되지 않아요. 정확한 보장 여부는 UTSU나 Cowan에 확인하세요.",
-         en:"<b>How it works</b><br>The Unclaimed FAQ bot answers automatically from official UHIP and UTSU plan info for U of T St. George international students (as of November 2026). It doesn't diagnose and doesn't save chats. Confirm exact coverage with the UTSU or Cowan."}), "bot");
-});
-START.forEach(q => {
-  const b = document.createElement("button");
-  b.type = "button"; b.className = "cb-chip"; b.textContent = T(q);
-  b.addEventListener("click", () => ask(T(q)));
-  document.getElementById("fq-quick").appendChild(b);
-});
+function close(){ panel.classList.remove("open"); shade.classList.remove("open"); tab.classList.remove("hide"); tab.setAttribute("aria-expanded","false"); tab.focus(); }
+tab.addEventListener("click", open);
+shade.addEventListener("click", close);
+document.getElementById("hd-x").addEventListener("click", close);
+document.getElementById("hd-track").addEventListener("click", () => { close(); const el = document.getElementById("tracker"); if (el) el.scrollIntoView({behavior:"smooth"}); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && panel.classList.contains("open")) close(); });
 document.getElementById("cb-form").addEventListener("submit", e => { e.preventDefault(); const v = input.value; input.value = ""; ask(v); });
 })();
 </script>
+
 
 </body>
 </html>
