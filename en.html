@@ -209,6 +209,35 @@ footer{padding:48px 20px 56px}
 .su-consent input{margin-top:2px;accent-color:var(--ink)}
 .su-msg{min-height:20px;margin-top:10px;font-size:13px}
 @media (max-width:620px){.su{grid-template-columns:1fr}.su input[type=email],.su select{border-right:0;border-bottom:1px solid var(--ink)}.su button{padding:14px}}
+
+/* care map */
+.mapwrap{display:grid;grid-template-columns:1.25fr 1fr;border-top:1px solid var(--line)}
+.map-col{border-right:1px solid var(--line);display:flex;flex-direction:column}
+#map{height:520px;background:var(--tile);z-index:0}
+.map-off{height:100%;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted);font-size:13px}
+.map-filter{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.mf{font:inherit;font-size:12px;font-weight:600;background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:6px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.mf i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.mf[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.map-list{list-style:none;margin:0;padding:0;max-height:520px;overflow-y:auto}
+.mp{padding:14px 18px;border-bottom:1px solid var(--line);display:grid;gap:3px}
+.mp-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.mp-t{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--c);display:inline-flex;align-items:center;gap:6px}
+.mp-t::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
+.mp-ph{font-family:var(--mono);font-size:12px}
+.mp-n{font:inherit;font-size:14.5px;font-weight:700;text-align:left;background:none;border:0;padding:0;color:var(--ink);cursor:pointer}
+.mp-n:hover{text-decoration:underline;text-underline-offset:3px}
+.mp-a{font-size:12.5px;color:var(--muted)}
+.mp-h{font-size:12px;font-family:var(--mono)}
+.mp-note{font-size:12.5px}
+.mp-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
+.mp-links a{font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.map-info{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.map-info>div{padding:16px 20px;font-size:13px}
+.map-info>div:first-child{border-right:1px solid var(--line);background:var(--mint)}
+.map-src{font-size:12px;color:var(--muted)}
+.leaflet-popup-content{font-family:var(--font);font-size:13px}
+@media (max-width:900px){.mapwrap{grid-template-columns:1fr}.map-col{border-right:0;border-bottom:1px solid var(--line)}#map{height:380px}.map-list{max-height:none}.map-info{grid-template-columns:1fr}.map-info>div:first-child{border-right:0;border-bottom:1px solid var(--line)}}
 /* campus selector */
 .pl-grid{grid-template-columns:repeat(4,1fr)}
 .pl-opt{font:inherit;text-align:left;background:var(--bg);color:var(--ink);border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px;cursor:pointer;display:grid;gap:4px}
@@ -226,6 +255,8 @@ footer{padding:48px 20px 56px}
 @media (max-width:900px){.pl-grid{grid-template-columns:1fr 1fr}.pl-opt:nth-child(2n){border-right:0}}
 @media (max-width:420px){.pl-grid{grid-template-columns:1fr}.pl-opt{border-right:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="config.js"></script>
 <script>
 window.CONFIG = window.CONFIG || {};
@@ -243,7 +274,7 @@ function track(name){ try { if (window.goatcounter && window.goatcounter.count) 
 /* ===== Plan data (2026–27). Sources listed per plan. ===== */
 const PLANS = {
   utsu: {
-    id:"utsu", union:"UTSU",
+    id:"utsu", campus:"UTSG", union:"UTSU",
     short:{ko:"UTSU 플랜", en:"UTSU plan"},
     who:{ko:"St. George 풀타임 학부생", en:"St. George full-time undergrads"},
     admin:{ko:"Health & Dental · 운영: Studentcare(Alumo) · 청구처: GreenShield", en:"Health & Dental · run by Studentcare (Alumo) · claims via GreenShield"},
@@ -278,7 +309,7 @@ const PLANS = {
     ]
   },
   utmsu: {
-    id:"utmsu", union:"UTMSU",
+    id:"utmsu", campus:"UTM", union:"UTMSU",
     short:{ko:"UTMSU 플랜", en:"UTMSU plan"},
     who:{ko:"Mississauga 풀타임 학부생", en:"Mississauga full-time undergrads"},
     admin:{ko:"Health & Dental · 운영: UTMSU · 보험사·청구처: GreenShield", en:"Health & Dental · run by UTMSU · insured by GreenShield"},
@@ -313,7 +344,7 @@ const PLANS = {
     ]
   },
   scsu: {
-    id:"scsu", union:"SCSU",
+    id:"scsu", campus:"UTSC", union:"SCSU",
     short:{ko:"SCSU 플랜", en:"SCSU plan"},
     who:{ko:"Scarborough 풀타임 학부생", en:"Scarborough full-time undergrads"},
     admin:{ko:"Health & Dental · 운영: SCSU · 보험사·청구처: GreenShield", en:"Health & Dental · run by SCSU · insured by GreenShield"},
@@ -349,7 +380,7 @@ const PLANS = {
     ]
   },
   utgsu: {
-    id:"utgsu", union:"UTGSU",
+    id:"utgsu", campus:"Graduate", union:"UTGSU",
     short:{ko:"UTGSU 플랜", en:"UTGSU plan"},
     who:{ko:"대학원생 (풀타임·파트타임)", en:"Graduate students (full- & part-time)"},
     admin:{ko:"Health & Dental · 운영: Alumo · 보험사·청구처: GreenShield", en:"Health & Dental · run by Alumo · insured by GreenShield"},
@@ -437,7 +468,7 @@ function planTotal(p){ return p.B.filter(b => !b.noTotal).reduce((s,b) => s + (b
 </script>
 </head>
 <body>
-<div class="bar"><span class="label"><span class="ko">2026–27 보험 연도 진행 중 · 올해 받을 수 있는 혜택 최대 </span><span class="en">2026–27 policy year · up to </span><span data-pl="total"></span><span class="en"> in benefits this year</span> · <span data-pl="union"></span></span></div>
+<div class="bar"><span class="label"><span class="ko">2026–27 보험 연도 진행 중 · 올해 받을 수 있는 혜택 최대 </span><span class="en">2026–27 policy year · up to </span><span data-pl="total"></span><span class="en"> in benefits this year</span> · <span data-pl="campus"></span></span></div>
 <header class="top">
   <a class="logo" href="#top">Unclaimed</a>
   <nav class="menu label" aria-label="Sections">
@@ -446,18 +477,18 @@ function planTotal(p){ return p.B.filter(b => !b.noTotal).reduce((s,b) => s + (b
     <a href="#tracker"><span class="ko">내 혜택</span><span class="en">My benefits</span></a>
     <a href="#perks"><span class="ko">숨은 혜택</span><span class="en">Benefits</span></a>
     <a href="#where"><span class="ko">병원 안내</span><span class="en">Where to go</span></a>
-    <a href="#clinic"><span class="ko">교내 보건소</span><span class="en">Campus clinic</span></a>
+    <a href="#clinic"><span class="ko">진료 지도</span><span class="en">Care map</span></a>
     <a href="#dates"><span class="ko">기한</span><span class="en">Deadlines</span></a>
   </nav>
   <div class="hdr-r">
   <div class="pl-menu">
-    <button type="button" class="pl-pill label" id="pl-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="pl-pop"><span data-pl="union"></span> ▾</button>
+    <button type="button" class="pl-pill label" id="pl-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="pl-pop"><span data-pl="campus"></span> ▾</button>
     <div class="pl-pop" id="pl-pop" role="menu" hidden>
       <div class="pl-pop-h label"><span class="ko">내 캠퍼스·과정</span><span class="en">My campus</span></div>
-      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="utsu"><b>UTSU</b><span><span class="ko">St. George 학부</span><span class="en">St. George undergrad</span></span></button>
-      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="utmsu"><b>UTMSU</b><span><span class="ko">Mississauga 학부</span><span class="en">Mississauga undergrad</span></span></button>
-      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="scsu"><b>SCSU</b><span><span class="ko">Scarborough 학부</span><span class="en">Scarborough undergrad</span></span></button>
-      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="utgsu"><b>UTGSU</b><span><span class="ko">대학원생</span><span class="en">Graduate students</span></span></button>
+      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="utsu"><b>UTSG</b><span><span class="ko">St. George 학부생</span><span class="en">St. George undergrads</span></span></button>
+      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="utmsu"><b>UTM</b><span><span class="ko">Mississauga 학부생</span><span class="en">Mississauga undergrads</span></span></button>
+      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="scsu"><b>UTSC</b><span><span class="ko">Scarborough 학부생</span><span class="en">Scarborough undergrads</span></span></button>
+      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="utgsu"><b>Graduate</b><span><span class="ko">대학원생</span><span class="en">Graduate students</span></span></button>
       <a class="pl-pop-f" href="#campus"><span class="ko">플랜 비교 보기 →</span><span class="en">Compare plans →</span></a>
     </div>
   </div>
@@ -495,10 +526,10 @@ function planTotal(p){ return p.B.filter(b => !b.noTotal).reduce((s,b) => s + (b
       <p><span class="ko">선택한 학생회 플랜 기준으로 보장 금액, 청구 도우미, 혜택 트래커, FAQ 답변이 모두 바뀌어요. UHIP은 모든 캠퍼스가 같아요.</span><span class="en">Amounts, the claim helper, tracker and FAQ answers all follow the student plan you pick. UHIP is the same on every campus.</span></p>
     </div>
     <div class="grid pl-grid" role="group" aria-label="Student plan">
-      <button type="button" class="pl-opt" data-plan="utsu" aria-pressed="false"><span class="pl-u">UTSU</span><span class="pl-c"><span class="ko">St. George 학부</span><span class="en">St. George undergrad</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utsu"></span></span></button>
-      <button type="button" class="pl-opt" data-plan="utmsu" aria-pressed="false"><span class="pl-u">UTMSU</span><span class="pl-c"><span class="ko">Mississauga 학부</span><span class="en">Mississauga undergrad</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utmsu"></span></span></button>
-      <button type="button" class="pl-opt" data-plan="scsu" aria-pressed="false"><span class="pl-u">SCSU</span><span class="pl-c"><span class="ko">Scarborough 학부</span><span class="en">Scarborough undergrad</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="scsu"></span></span></button>
-      <button type="button" class="pl-opt" data-plan="utgsu" aria-pressed="false"><span class="pl-u">UTGSU</span><span class="pl-c"><span class="ko">대학원생</span><span class="en">Graduate students</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utgsu"></span></span></button>
+      <button type="button" class="pl-opt" data-plan="utsu" aria-pressed="false"><span class="pl-u">UTSG</span><span class="pl-c"><span class="ko">St. George 학부생</span><span class="en">St. George undergrads</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utsu"></span></span></button>
+      <button type="button" class="pl-opt" data-plan="utmsu" aria-pressed="false"><span class="pl-u">UTM</span><span class="pl-c"><span class="ko">Mississauga 학부생</span><span class="en">Mississauga undergrads</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utmsu"></span></span></button>
+      <button type="button" class="pl-opt" data-plan="scsu" aria-pressed="false"><span class="pl-u">UTSC</span><span class="pl-c"><span class="ko">Scarborough 학부생</span><span class="en">Scarborough undergrads</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="scsu"></span></span></button>
+      <button type="button" class="pl-opt" data-plan="utgsu" aria-pressed="false"><span class="pl-u">Graduate</span><span class="pl-c"><span class="ko">대학원생</span><span class="en">Graduate students</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utgsu"></span></span></button>
     </div>
   </section>
 
@@ -850,9 +881,21 @@ window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
 
   <section id="clinic" aria-labelledby="h-clinic">
     <div class="sec-head">
-      <h2 id="h-clinic"><span class="ko">우리 캠퍼스 보건소</span><span class="en">Your campus health centre</span></h2>
-      <p><span class="ko">U of T 학생이라면 캠퍼스 보건소에서 의사·간호사 진료와 상담을 받을 수 있어요. 진료비는 UHIP으로 처리돼요.</span><span class="en">As a U of T student you can see doctors, nurses and counsellors at your campus health centre. Visits are billed to UHIP.</span></p>
+      <h2 id="h-clinic"><span class="ko">캠퍼스 주변 진료 지도</span><span class="en">Care near campus</span></h2>
+      <p><span class="ko">선택한 캠퍼스 근처의 교내 보건소, 워크인 클리닉, 응급실, 약국을 학교 공식 안내 목록에서 골랐어요. 이름을 누르면 지도에서 위치를 보여줘요.</span><span class="en">Campus clinic, walk-ins, ERs and pharmacies near your campus, taken from the school's official lists. Tap a name to see it on the map.</span></p>
     </div>
+    <div class="mapwrap">
+      <div class="map-col"><div id="map" role="region" aria-label="Map"></div></div>
+      <div>
+        <div class="map-filter" id="map-filter" role="group" aria-label="Filter"></div>
+        <ul class="map-list" id="map-list"></ul>
+      </div>
+    </div>
+    <div class="map-info">
+      <div><span class="ko"><b>보험은 이렇게:</b> UHIP은 온타리오 대부분의 의사에게 쓸 수 있어요. 다만 OHIP 카드가 없으면 진료비를 먼저 받는 워크인도 있어요. 그럴 땐 영수증을 받아 Cowan에 청구하면 돼요. 바로 청구해 주는지는 방문 전에 전화로 물어보세요.</span><span class="en"><b>About insurance:</b> UHIP works with most doctors in Ontario, but some walk-ins charge up front if you don't have OHIP. Keep the receipt and claim it from Cowan. Ask by phone whether they bill directly.</span></div>
+      <div><p class="map-src" id="map-src" style="margin:0 0 8px"></p><span class="ko">문 닫은 시간이라면 <a href="https://www.iamsick.ca" target="_blank" rel="noopener">iamsick.ca</a>에서 지금 여는 클리닉을 찾거나, Health811(전화 811)에서 간호사 상담을 받을 수 있어요.</span><span class="en">After hours, find open clinics at <a href="https://www.iamsick.ca" target="_blank" rel="noopener">iamsick.ca</a> or call Health811 (dial 811) for a nurse.</span></div>
+    </div>
+    <div class="sec-head" style="padding-top:36px"><h2 style="font-size:16px"><span class="ko">우리 캠퍼스 보건소 이용법</span><span class="en">Using your campus health centre</span></h2></div>
     <div class="grid g2" id="clinic-box"></div>
   </section>
 
@@ -878,10 +921,10 @@ window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
       <input type="email" id="su-email" autocomplete="email" required>
       <label for="su-campus" style="position:absolute;left:-9999px">Campus</label>
       <select id="su-campus">
-        <option value="UTSU">UTSU · St. George</option>
-        <option value="UTMSU">UTMSU · Mississauga</option>
-        <option value="SCSU">SCSU · Scarborough</option>
-        <option value="UTGSU">UTGSU · Graduate</option>
+        <option value="UTSU">UTSG · UTSU</option>
+        <option value="UTMSU">UTM · UTMSU</option>
+        <option value="SCSU">UTSC · SCSU</option>
+        <option value="UTGSU">Graduate · UTGSU</option>
       </select>
       <button type="submit"><span class="ko">알림 신청</span><span class="en">Notify me</span></button>
     </form>
@@ -1029,7 +1072,7 @@ function renderPlanParts(){
   const p = UNC.plan();
   document.querySelectorAll("[data-pl]").forEach(el => {
     const k = el.dataset.pl;
-    const v = k === "short" ? p.short : k === "union" ? p.union : k === "who" ? p.who : k === "dental" ? money(p.dentalMax) : k === "total" ? money(planTotal(p)) : null;
+    const v = k === "short" ? p.short : k === "union" ? p.union : k === "campus" ? p.campus : k === "who" ? p.who : k === "dental" ? money(p.dentalMax) : k === "total" ? money(planTotal(p)) : null;
     if (v != null) el.innerHTML = bi(v);
   });
   document.querySelectorAll(".pl-opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.plan === p.id));
@@ -1076,6 +1119,7 @@ function renderPlanParts(){
       <ol class="steps" style="margin-top:14px">${cl.book.map(x => `<li><span>${bi(x)}</span></li>`).join("")}</ol>
       <div class="note" style="margin-top:14px">${bi({ko:"밤이나 주말에 힘들 땐 U of T Telus Health Student Support로 24시간 무료 상담(전화·채팅)을 받을 수 있어요. 모든 U of T 학생이 이용할 수 있어요.", en:"At night or on weekends, U of T Telus Health Student Support offers free 24/7 counselling by phone or chat for every U of T student."})}</div>
     </article>`;
+  renderMap();
   const hc = document.getElementById("hd-contact"); if (hc) hc.textContent = p.contact;
 }
 function onPlan(){
@@ -1086,6 +1130,119 @@ function onPlan(){
 }
 document.querySelectorAll(".pl-opt").forEach(b => b.addEventListener("click", () => UNC.set(b.dataset.plan)));
 document.addEventListener("unc:plan", onPlan);
+
+/* ===== Nearby care map (sources: U of T Student Life, UTM HCC, UTSC HWC lists; checked Nov 2026) ===== */
+const PTYPE = {
+  campus:{ko:"교내 보건소", en:"Campus clinic", color:"#000000"},
+  walkin:{ko:"워크인", en:"Walk-in", color:"#1FA66B"},
+  urgent:{ko:"Urgent Care", en:"Urgent care", color:"#E08A00"},
+  er:{ko:"응급실", en:"Emergency", color:"#D92D20"},
+  pharmacy:{ko:"약국", en:"Pharmacy", color:"#6B7280"},
+  sexual:{ko:"성 건강", en:"Sexual health", color:"#7A5AF8"}
+};
+const PLACES = {
+  sg: [
+    {t:"campus", n:"Health & Wellness Centre", a:"700 Bay St, Toronto", p:"416-978-8030", ll:[43.6581,-79.38582],
+     note:{ko:"U of T 학생 무료 · 평일 운영 · 처음이면 전화로 환자 등록", en:"Free for U of T students · weekdays · register by phone first"}},
+    {t:"walkin", n:"Bay College Medical & Lockwood Diagnostics", a:"790 Bay St, Suite 108, Toronto", p:"416-929-1900", ll:[43.66045,-79.38617],
+     note:{ko:"UHIP 진료 가능 · 같은 곳에 치과·안과·약국·물리치료도 있어요", en:"Accepts UHIP · dental, optometry, pharmacy and physio on site"}},
+    {t:"walkin", n:"Sanomed Medical Clinic", a:"1000 Bay St, Toronto", p:"416-915-7770", ll:[43.66504,-79.38769],
+     note:{ko:"UHIP 진료 가능", en:"Accepts UHIP"}},
+    {t:"walkin", n:"The Medical Practice Walk-in Clinic", a:"799 Bloor St W, Toronto", p:"647-349-0053", ll:[43.6627,-79.42134],
+     note:{ko:"UHIP 진료 가능 · 코리아타운", en:"Accepts UHIP · Koreatown"}},
+    {t:"sexual", n:"The Bay Centre (Women's College Hospital)", a:"76 Grenville St, 3rd floor, Toronto", p:"416-351-3700", ll:[43.66173,-79.38754],
+     note:{ko:"피임·성 건강 클리닉 · UHIP 진료 가능", en:"Birth control & sexual health clinic · accepts UHIP"}},
+    {t:"er", n:"Toronto General Hospital", a:"200 Elizabeth St, Toronto", p:"416-340-3388", ll:[43.6586,-79.38816],
+     note:{ko:"24시간 응급실 · 입원하면 48시간 안에 Cowan에 알리기", en:"24/7 emergency · if admitted, tell Cowan within 48 hours"}},
+    {t:"er", n:"Mount Sinai Hospital", a:"600 University Ave, Toronto", p:"416-586-4800", ll:[43.65745,-79.39032],
+     note:{ko:"24시간 응급실", en:"24/7 emergency"}}
+  ],
+  utm: [
+    {t:"campus", n:"Health & Counselling Centre (HCC)", a:"3359 Mississauga Rd, DV 1152, Mississauga", p:"905-828-5255", ll:[43.55022,-79.66266],
+     note:{ko:"UTM 학생 무료 · 전화 예약 · 당일 예약 가능", en:"Free for UTM students · book by phone · same-day slots"}},
+    {t:"walkin", n:"South Common Mall Walk-in Clinic", a:"2110 Burnhamthorpe Rd W, Unit 3, Mississauga", p:"905-820-3209", ll:[43.54215,-79.68195],
+     hours:{ko:"월–금 9:30–20:00 · 토 9:30–17:00 · 일 10:30–16:00", en:"Mon–Fri 9:30–8 · Sat 9:30–5 · Sun 10:30–4"},
+     note:{ko:"OHIP 카드가 없으면 $75 먼저 결제 → 영수증으로 Cowan에 청구", en:"Without OHIP you pay $75 up front → claim it from Cowan"}},
+    {t:"walkin", n:"Hurontario Square Medical Centre", a:"2500 Hurontario St, Unit 14, Mississauga", p:"905-897-6160", ll:[43.57737,-79.61377],
+     hours:{ko:"월–금 9:30–19:30 · 토 9:30–16:30", en:"Mon–Fri 9:30–7:30 · Sat 9:30–4:30"},
+     note:{ko:"OHIP 카드가 없으면 $50 먼저 결제 → Cowan에 청구", en:"Without OHIP you pay $50 up front → claim from Cowan"}},
+    {t:"walkin", n:"Queentario Medical Centre", a:"2325 Hurontario St, Mississauga", p:"905-270-8307", ll:[43.57485,-79.60818],
+     hours:{ko:"월 9–20 · 화·목·금 9–19 · 수 13–20 · 토 10–15 · 일 휴무", en:"Mon 9–8 · Tue/Thu/Fri 9–7 · Wed 1–8 · Sat 10–3 · Sun closed"},
+     note:{ko:"OHIP 카드가 없으면 $75 먼저 결제 → Cowan에 청구", en:"Without OHIP you pay $75 up front → claim from Cowan"}},
+    {t:"urgent", n:"Queensway Urgent Care Centre", a:"150 Sherway Dr, Etobicoke", p:"416-295-6671", ll:[43.60999,-79.56272],
+     hours:{ko:"매일 15:00–21:00 (공휴일 포함)", en:"Daily 3–9 p.m., holidays included"},
+     note:{ko:"UHIP 진료 가능 · 예약 필요 없음", en:"Accepts UHIP · no appointment needed"}},
+    {t:"er", n:"Credit Valley Hospital", a:"2200 Eglinton Ave W, Mississauga", p:"905-813-2200", ll:[43.55944,-79.70371],
+     note:{ko:"24시간 · UHIP 진료 가능 · 캠퍼스에서 가장 가까운 병원", en:"24/7 · accepts UHIP · nearest hospital to campus"}},
+    {t:"er", n:"Mississauga Hospital", a:"100 Queensway W, Mississauga", p:"905-848-7100", ll:[43.57134,-79.60875],
+     note:{ko:"24시간 · UHIP 진료 가능", en:"24/7 · accepts UHIP"}}
+  ],
+  utsc: [
+    {t:"campus", n:"Health & Wellness Centre (SL-270)", a:"1265 Military Trail, Student Centre, Toronto", p:"416-287-7065", ll:[43.78351,-79.18781],
+     note:{ko:"UTSC 학생 · 전화나 방문 예약 · 운영 중 간호사 방문 상담", en:"UTSC students · book by phone or in person · nurse drop-in"}},
+    {t:"er", n:"SHN Centenary Hospital · Urgent Care Centre", a:"2867 Ellesmere Rd, Toronto", p:"", ll:[43.78109,-79.20544],
+     note:{ko:"병원 응급실 · 메디컬몰 208호(북쪽 정문 근처)에 Urgent Care 워크인도 있어요. 시간은 미리 전화 확인", en:"Hospital ER · Urgent Care walk-in in the Medical Mall, Suite 208 (near north entrance). Call ahead for hours"}},
+    {t:"walkin", n:"Town Care Medical Clinic", a:"60 Town Centre Court, Unit 3, Toronto", p:"416-792-2654", ll:[43.77336,-79.25602],
+     note:{ko:"UTSC 안내 목록의 워크인 · 시간은 미리 전화 확인", en:"Walk-in on UTSC's list · call ahead for hours"}},
+    {t:"walkin", n:"The Doctor's Office Walk-In", a:"4410 Kingston Rd, Toronto", p:"416-284-1020", ll:[43.76822,-79.19034],
+     note:{ko:"UTSC 안내 목록의 워크인 · 시간은 미리 전화 확인", en:"Walk-in on UTSC's list · call ahead for hours"}},
+    {t:"walkin", n:"Malvern Medical Centre", a:"1333 Neilson Rd, #100, Toronto", p:"416-291-7719", ll:[43.80849,-79.21961],
+     note:{ko:"UTSC 안내 목록의 워크인 · 시간은 미리 전화 확인", en:"Walk-in on UTSC's list · call ahead for hours"}},
+    {t:"pharmacy", n:"Food Basics Pharmacy", a:"2900 Ellesmere Rd, Toronto", p:"416-281-0505", ll:[43.78413,-79.20359],
+     note:{ko:"처방약은 GreenShield 회원 번호를 알려 주세요", en:"Give them your GreenShield ID for prescriptions"}},
+    {t:"pharmacy", n:"Care IDA Pharmacy", a:"3600 Ellesmere Rd, Unit 7, Toronto", p:"416-287-6674", ll:[43.79018,-79.17364],
+     note:{ko:"캠퍼스에서 가장 가까운 약국", en:"Closest pharmacy to campus"}}
+  ]
+};
+const PLACE_SRC = {
+  sg:{url:"https://studentlife.utoronto.ca/task/find-an-after-hours-and-weekend-clinic/", label:"U of T Student Life"},
+  utm:{url:"https://www.utm.utoronto.ca/health/resources/after-hours-walk-clinics", label:"UTM Health & Counselling Centre"},
+  utsc:{url:"https://utsc.utoronto.ca/hwc", label:"UTSC Health & Wellness Centre"}
+};
+let MAP = null, MLAYER = null, MARKS = [], mapFilter = "all";
+function gmaps(pl){ return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(pl.n + ", " + pl.a); }
+function renderMap(){
+  const key = CLINIC_OF[UNC.id()], list = PLACES[key], src = PLACE_SRC[key];
+  const types = ["all"].concat(Object.keys(PTYPE).filter(t => list.some(x => x.t === t)));
+  if (!types.includes(mapFilter)) mapFilter = "all";
+  const fl = document.getElementById("map-filter");
+  fl.innerHTML = types.map(t => `<button type="button" class="mf" data-t="${t}" aria-pressed="${t === mapFilter}">${t === "all" ? bi({ko:"전체",en:"All"}) : `<i style="background:${PTYPE[t].color}"></i>${bi(PTYPE[t])}`}</button>`).join("");
+  fl.querySelectorAll(".mf").forEach(b => b.addEventListener("click", () => { mapFilter = b.dataset.t; renderMap(); }));
+  const shown = list.filter(x => mapFilter === "all" || x.t === mapFilter);
+  const ul = document.getElementById("map-list");
+  ul.innerHTML = shown.map((x, i) => `
+    <li class="mp" data-i="${list.indexOf(x)}">
+      <div class="mp-top"><span class="mp-t" style="--c:${PTYPE[x.t].color}">${bi(PTYPE[x.t])}</span>${x.p ? `<span class="mp-ph">${esc(x.p)}</span>` : ""}</div>
+      <button type="button" class="mp-n">${esc(x.n)}</button>
+      <div class="mp-a">${esc(x.a)}</div>
+      ${x.hours ? `<div class="mp-h">${bi(x.hours)}</div>` : ""}
+      <div class="mp-note">${bi(x.note)}</div>
+      <div class="mp-links"><a href="${gmaps(x)}" target="_blank" rel="noopener">${bi({ko:"Google 지도 · 영업시간",en:"Google Maps · hours"})}</a>${(x.t === "walkin" || x.t === "urgent") ? `<a href="https://medimap.ca" target="_blank" rel="noopener">${bi({ko:"Medimap 대기시간",en:"Medimap wait times"})}</a>` : ""}${x.p ? `<a href="tel:${x.p.replace(/[^0-9]/g,"")}">${bi({ko:"전화",en:"Call"})}</a>` : ""}</div>
+    </li>`).join("");
+  document.getElementById("map-src").innerHTML = bi({ko:"출처: ", en:"Source: "}) + `<a href="${src.url}" target="_blank" rel="noopener">${esc(src.label)}</a>` + bi({ko:" 안내 목록 (2026년 11월 확인). 장소와 시간은 바뀔 수 있으니 방문 전에 꼭 전화로 확인하세요.", en:" list (checked Nov 2026). Places and hours change, so call before you go."});
+  const el = document.getElementById("map");
+  if (!window.L) { el.innerHTML = `<div class="map-off">${bi({ko:"이 화면에서는 지도를 불러올 수 없어요. 아래 목록의 Google 지도 링크를 이용하세요.", en:"The map can't load here. Use the Google Maps links in the list."})}</div>`; return; }
+  if (!MAP) {
+    MAP = L.map(el, {scrollWheelZoom:false});
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(MAP);
+    MLAYER = L.layerGroup().addTo(MAP);
+  }
+  MLAYER.clearLayers(); MARKS = [];
+  const L2 = document.documentElement.dataset.lang === "en" ? "en" : "ko";
+  shown.forEach(x => {
+    const m = L.circleMarker(x.ll, {radius: x.t === "campus" ? 10 : 8, color:"#fff", weight:2, fillColor:PTYPE[x.t].color, fillOpacity:1})
+      .bindPopup(`<b>${esc(x.n)}</b><br><span style="color:#666">${esc(PTYPE[x.t][L2])}</span><br>${esc(x.a)}${x.p ? "<br>" + esc(x.p) : ""}<br><a href="${gmaps(x)}" target="_blank" rel="noopener">${L2 === "ko" ? "Google 지도에서 보기" : "Open in Google Maps"}</a>`);
+    m.addTo(MLAYER); MARKS[list.indexOf(x)] = m;
+  });
+  const b = L.latLngBounds(shown.map(x => x.ll));
+  MAP.fitBounds(b, {padding:[30,30], maxZoom:15});
+  setTimeout(() => MAP.invalidateSize(), 50);
+  ul.querySelectorAll(".mp-n").forEach(btn => btn.addEventListener("click", () => {
+    const i = +btn.closest(".mp").dataset.i, m = MARKS[i]; if (!m) return;
+    MAP.setView(m.getLatLng(), 15); m.openPopup();
+    document.getElementById("map").scrollIntoView({behavior:"smooth", block:"center"});
+  }));
+}
 
 /* ---- header campus dropdown ---- */
 (function(){
