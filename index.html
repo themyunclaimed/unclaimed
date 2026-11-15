@@ -175,6 +175,40 @@ footer{padding:48px 20px 56px}
   .list .opt{border-right:0 !important}
 }
 
+
+/* header campus dropdown */
+.pl-menu{position:relative}
+.pl-pill{font:inherit;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--bg);color:var(--ink);cursor:pointer}
+.pl-pill[aria-expanded="true"]{background:var(--ink);color:#fff}
+.pl-pop{position:absolute;right:0;top:calc(100% + 10px);width:290px;background:var(--bg);border:1px solid var(--ink);box-shadow:0 12px 32px rgba(0,0,0,.14);z-index:40}
+.pl-pop[hidden]{display:none}
+.pl-pop-h{padding:12px 16px 10px;border-bottom:1px dashed var(--line);color:var(--muted)}
+.pl-item{font:inherit;width:100%;display:grid;grid-template-columns:1fr auto;gap:2px 10px;text-align:left;background:var(--bg);color:var(--ink);border:0;border-bottom:1px solid var(--line);padding:12px 16px;cursor:pointer}
+.pl-item:last-of-type{border-bottom:0}
+.pl-item b{font-size:15px;font-weight:700}
+.pl-item span{grid-column:1;font-size:12.5px;color:var(--muted)}
+.pl-item em{grid-row:1/3;grid-column:2;align-self:center;font-style:normal;font-family:var(--mono);font-size:12px}
+.pl-item:hover{background:var(--tile)}
+.pl-item[aria-checked="true"]{background:var(--ink);color:#fff}
+.pl-item[aria-checked="true"] span{color:#bbb}
+.pl-item[aria-checked="true"] em{color:var(--mint)}
+.pl-pop-f{display:block;padding:10px 16px;font-size:12px;color:var(--muted);border-top:1px dashed var(--line);text-decoration:none}
+.pl-pop-f:hover{color:var(--ink);text-decoration:underline}
+/* helpful? */
+.fb{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:14px 16px;border:1px dashed var(--line);margin-top:6px}
+.fb .label{margin-right:auto}
+.fb button{font:inherit;font-size:12.5px;font-weight:600;background:var(--bg);color:var(--ink);border:1px solid var(--ink);padding:7px 12px;cursor:pointer}
+.fb button:hover{background:var(--mint)}
+.fb .thanks{font-size:13px}
+.fb a{font-size:13px;font-weight:600}
+/* signup */
+.su{display:grid;grid-template-columns:1fr 200px auto;gap:0;max-width:640px;margin:0 auto;border:1px solid var(--ink);text-align:left}
+.su input[type=email],.su select{font:inherit;font-size:13.5px;border:0;border-right:1px solid var(--ink);padding:14px 16px;background:var(--bg);color:var(--ink);min-width:0;border-radius:0}
+.su button{font:inherit;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--ink);color:#fff;border:0;padding:0 22px;cursor:pointer}
+.su-consent{display:flex;gap:8px;justify-content:center;align-items:flex-start;max-width:640px;margin:12px auto 0;font-size:12px;color:var(--muted);text-align:left;cursor:pointer}
+.su-consent input{margin-top:2px;accent-color:var(--ink)}
+.su-msg{min-height:20px;margin-top:10px;font-size:13px}
+@media (max-width:620px){.su{grid-template-columns:1fr}.su input[type=email],.su select{border-right:0;border-bottom:1px solid var(--ink)}.su button{padding:14px}}
 /* campus selector */
 .pl-grid{grid-template-columns:repeat(4,1fr)}
 .pl-opt{font:inherit;text-align:left;background:var(--bg);color:var(--ink);border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px;cursor:pointer;display:grid;gap:4px}
@@ -192,6 +226,19 @@ footer{padding:48px 20px 56px}
 @media (max-width:900px){.pl-grid{grid-template-columns:1fr 1fr}.pl-opt:nth-child(2n){border-right:0}}
 @media (max-width:420px){.pl-grid{grid-template-columns:1fr}.pl-opt{border-right:0}}
 </style>
+<script src="config.js"></script>
+<script>
+window.CONFIG = window.CONFIG || {};
+(function(){
+  var gc = String(window.CONFIG.goatcounter || "").trim();
+  if (!gc) return;
+  var s = document.createElement("script");
+  s.async = true; s.src = "https://gc.zgo.at/count.js";
+  s.setAttribute("data-goatcounter", "https://" + gc + ".goatcounter.com/count");
+  document.head.appendChild(s);
+})();
+function track(name){ try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({path:name, title:name, event:true}); } catch(e) {} }
+</script>
 <script>
 /* ===== Plan data (2026–27). Sources listed per plan. ===== */
 const PLANS = {
@@ -368,7 +415,17 @@ function planTotal(p){ return p.B.filter(b => !b.noTotal).reduce((s,b) => s + (b
     <a href="#dates"><span class="ko">기한</span><span class="en">Deadlines</span></a>
   </nav>
   <div class="hdr-r">
-  <a class="pl-pill label" href="#campus"><span data-pl="union"></span> ▾</a>
+  <div class="pl-menu">
+    <button type="button" class="pl-pill label" id="pl-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="pl-pop"><span data-pl="union"></span> ▾</button>
+    <div class="pl-pop" id="pl-pop" role="menu" hidden>
+      <div class="pl-pop-h label"><span class="ko">내 캠퍼스·과정</span><span class="en">My campus</span></div>
+      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="utsu"><b>UTSU</b><span><span class="ko">St. George 학부</span><span class="en">St. George undergrad</span></span><em data-sum="utsu"></em></button>
+      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="utmsu"><b>UTMSU</b><span><span class="ko">Mississauga 학부</span><span class="en">Mississauga undergrad</span></span><em data-sum="utmsu"></em></button>
+      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="scsu"><b>SCSU</b><span><span class="ko">Scarborough 학부</span><span class="en">Scarborough undergrad</span></span><em data-sum="scsu"></em></button>
+      <button type="button" class="pl-item" role="menuitemradio" aria-checked="false" data-plan="utgsu"><b>UTGSU</b><span><span class="ko">대학원생</span><span class="en">Graduate students</span></span><em data-sum="utgsu"></em></button>
+      <a class="pl-pop-f" href="#campus"><span class="ko">플랜 비교 보기 →</span><span class="en">Compare plans →</span></a>
+    </div>
+  </div>
   <nav class="lang" aria-label="Language">
     <a aria-current="page" href="index.html" hreflang="ko">KOR</a>
     <a href="en.html" hreflang="en">ENG</a>
@@ -771,8 +828,22 @@ window.unclaimedTracker = {parseD, pyStart, deadline, daysBetween};
 <footer>
   <div class="join">
     <p class="big"><span class="ko">내 혜택, 이제 놓치지 마세요.</span><span class="en">Leave nothing unclaimed.</span></p>
-    <p><span class="ko">청구 기한 알림과 앱 출시 소식도 곧 전해 드릴게요.</span><span class="en">Deadline reminders and app updates are coming soon.</span></p>
-    <a class="btn ghost" href="#helper"><span class="ko">청구 도우미 써 보기</span><span class="en">Use the claim helper</span></a>
+    <p><span class="ko">청구 기한 알림과 앱 출시 소식을 이메일로 받아 보세요.</span><span class="en">Get claim-deadline reminders and launch news by email.</span></p>
+    <form class="su" id="su-form" novalidate>
+      <label for="su-email" style="position:absolute;left:-9999px">Email</label>
+      <input type="email" id="su-email" autocomplete="email" required>
+      <label for="su-campus" style="position:absolute;left:-9999px">Campus</label>
+      <select id="su-campus">
+        <option value="UTSU">UTSU · St. George</option>
+        <option value="UTMSU">UTMSU · Mississauga</option>
+        <option value="SCSU">SCSU · Scarborough</option>
+        <option value="UTGSU">UTGSU · Graduate</option>
+      </select>
+      <button type="submit"><span class="ko">알림 신청</span><span class="en">Notify me</span></button>
+    </form>
+    <label class="su-consent" for="su-ok"><input type="checkbox" id="su-ok"><span><span class="ko">청구 기한 알림과 앱 출시 소식을 받는 데에만 이메일을 쓰는 것에 동의해요. 언제든 삭제를 요청할 수 있어요.</span><span class="en">I agree my email is used only for deadline reminders and launch news. I can ask for it to be deleted anytime.</span></span></label>
+    <div class="su-msg" id="su-msg" role="status"></div>
+    <iframe name="su-sink" title="signup" hidden></iframe>
   </div>
   <div class="fcols">
     <div>
@@ -905,7 +976,8 @@ function select(id){
     <div class="block"><h4 class="label">${bi(H.cov)}</h4><ul class="cov">${cov}</ul></div>
     <div class="block"><h4 class="label">${bi(H.how)}</h4><ol class="steps">${steps}</ol></div>
     ${notes ? `<div class="block"><h4 class="label">${bi(H.watch)}</h4>${notes}</div>` : ""}
-    <div class="block"><h4 class="label">${bi(H.check)}</h4><ul class="checklist">${check}</ul></div>`;
+    <div class="block"><h4 class="label">${bi(H.check)}</h4><ul class="checklist">${check}</ul></div>
+    <div class="fb" data-fb="${id}"><span class="label">${bi({ko:"이 정보가 도움이 됐나요?",en:"Was this helpful?"})}</span><button type="button" data-v="up">${bi({ko:"도움이 됐어요",en:"Yes"})}</button><button type="button" data-v="down">${bi({ko:"아쉬워요",en:"Not really"})}</button></div>`;
 }
 
 /* ---- plan-driven page parts ---- */
@@ -917,6 +989,7 @@ function renderPlanParts(){
     if (v != null) el.innerHTML = bi(v);
   });
   document.querySelectorAll(".pl-opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.plan === p.id));
+  document.querySelectorAll(".pl-item").forEach(b => b.setAttribute("aria-checked", b.dataset.plan === p.id));
   document.querySelectorAll("[data-sum]").forEach(el => { el.textContent = money(planTotal(PLANS[el.dataset.sum])); });
   /* student plan card */
   document.getElementById("sp-card").innerHTML = `
@@ -950,6 +1023,69 @@ function onPlan(){
 }
 document.querySelectorAll(".pl-opt").forEach(b => b.addEventListener("click", () => UNC.set(b.dataset.plan)));
 document.addEventListener("unc:plan", onPlan);
+
+/* ---- header campus dropdown ---- */
+(function(){
+  const btn = document.getElementById("pl-btn"), pop = document.getElementById("pl-pop");
+  if (!btn || !pop) return;
+  const open = () => { pop.hidden = false; btn.setAttribute("aria-expanded","true"); const c = pop.querySelector('[aria-checked="true"]') || pop.querySelector(".pl-item"); c && c.focus(); };
+  const close = (focus) => { pop.hidden = true; btn.setAttribute("aria-expanded","false"); if (focus) btn.focus(); };
+  btn.addEventListener("click", e => { e.stopPropagation(); pop.hidden ? open() : close(); });
+  pop.querySelectorAll(".pl-item").forEach(it => it.addEventListener("click", () => { UNC.set(it.dataset.plan); close(true); }));
+  pop.querySelector(".pl-pop-f").addEventListener("click", () => close());
+  document.addEventListener("click", e => { if (!pop.hidden && !pop.contains(e.target) && e.target !== btn) close(); });
+  document.addEventListener("keydown", e => {
+    if (pop.hidden) return;
+    if (e.key === "Escape") close(true);
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      const items = [...pop.querySelectorAll(".pl-item")], i = items.indexOf(document.activeElement);
+      items[(i + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length].focus();
+    }
+  });
+})();
+document.addEventListener("unc:plan", e => track("plan/" + e.detail));
+
+/* ---- "helpful?" feedback in the claim helper ---- */
+result.addEventListener("click", e => {
+  const b = e.target.closest(".fb button"); if (!b) return;
+  const box = b.closest(".fb"), v = b.dataset.v, id = box.dataset.fb;
+  track(`feedback/${UNC.id()}/${id}/${v}`);
+  const L = document.documentElement.dataset.lang === "en" ? "en" : "ko";
+  const form = String((window.CONFIG || {}).feedbackForm || "").trim();
+  let html = `<span class="thanks">${v === "up" ? (L === "ko" ? "의견 고마워요!" : "Thanks for the feedback!") : (L === "ko" ? "알려 줘서 고마워요. 더 다듬을게요." : "Thanks — we'll improve this.")}</span>`;
+  if (v === "down" && /^https?:\/\//.test(form)) html += ` <a href="${esc(form)}" target="_blank" rel="noopener">${L === "ko" ? "무엇이 부족했는지 알려 주기 →" : "Tell us what was missing →"}</a>`;
+  box.innerHTML = html;
+});
+
+/* ---- email signup (posts to a Google Form; see config.js) ---- */
+(function(){
+  const f = document.getElementById("su-form"); if (!f) return;
+  const em = document.getElementById("su-email"), cp = document.getElementById("su-campus"), ok = document.getElementById("su-ok"), msg = document.getElementById("su-msg");
+  const L = document.documentElement.dataset.lang === "en" ? "en" : "ko";
+  em.placeholder = L === "ko" ? "이메일 주소" : "Email address";
+  const syncCampus = () => { cp.value = UNC.plan().union; };
+  syncCampus(); document.addEventListener("unc:plan", syncCampus);
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    const v = em.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.textContent = L === "ko" ? "이메일 주소를 다시 확인해 주세요." : "Please check your email address."; em.focus(); return; }
+    if (!ok.checked) { msg.textContent = L === "ko" ? "이메일 이용에 동의해 주세요." : "Please tick the consent box."; ok.focus(); return; }
+    const c = (window.CONFIG || {}).signupForm || {};
+    if (!/^https:\/\/docs\.google\.com\/forms\//.test(c.action || "") || !c.email) {
+      msg.textContent = L === "ko" ? "알림 신청은 곧 열려요. 조금만 기다려 주세요!" : "Sign-ups open soon. Check back shortly!";
+      return;
+    }
+    const post = document.createElement("form");
+    post.method = "POST"; post.action = c.action; post.target = "su-sink"; post.hidden = true;
+    const add = (n, val) => { if (!n) return; const i = document.createElement("input"); i.type = "hidden"; i.name = n; i.value = val; post.append(i); };
+    add(c.email, v); add(c.campus, cp.value);
+    document.body.append(post); post.submit(); post.remove();
+    track("signup/" + cp.value);
+    f.reset(); ok.checked = false; syncCampus();
+    msg.textContent = L === "ko" ? "신청됐어요! 청구 기한과 새 소식을 이메일로 알려 드릴게요." : "You're on the list! We'll email you deadlines and news.";
+  });
+})();
 drawList(); select(current); renderPlanParts();
 
 </script>
@@ -1163,11 +1299,11 @@ function answerSituation(s){
 function reply(raw){
   const text = raw.toLowerCase().replace(/예약|계약|약속|요약/g, " ");
   if (CRX.test(text)) {
-    add(T({ko:"지금 많이 힘든 상황이라면 혼자 견디지 않으셔도 돼요. 캐나다에서는 <b>9-8-8</b>에 전화하거나 문자하면 24시간 위기 상담을 받을 수 있어요. 당장 위험하다면 <b>911</b>에 연락하세요. UTSU 플랜의 <b>Empower Me</b>도 24시간 이용할 수 있어요.",
-           en:"If you're going through something hard right now, you don't have to handle it alone. In Canada you can <b>call or text 9-8-8</b> any time for crisis support. If you're in immediate danger, call <b>911</b>. <b>Empower Me</b> in the UTSU plan is also available 24/7."}), "bot alert");
+    add(T({ko:"지금 많이 힘든 상황이라면 혼자 견디지 않으셔도 돼요. 캐나다에서는 <b>9-8-8</b>에 전화하거나 문자하면 24시간 위기 상담을 받을 수 있어요. 당장 위험하다면 <b>911</b>에 연락하세요. 캠퍼스 Health & Wellness 센터에서도 도움을 받을 수 있어요.",
+           en:"If you're going through something hard right now, you don't have to handle it alone. In Canada you can <b>call or text 9-8-8</b> any time for crisis support. If you're in immediate danger, call <b>911</b>. Your campus Health & Wellness Centre can also help."}), "bot alert");
     return;
   }
-  if (ERX.test(text)) {
+  if (ERX.test(text)) { track("chat/emergency");
     add(T({ko:"<b>응급 상황일 수 있어요. 지금 바로 911에 전화하거나 가까운 응급실로 가세요.</b> 보험 처리는 나중에 해도 괜찮아요. 입원하게 되면 48시간 안에 Cowan(1-833-377-8447)에 알려 주세요.",
            en:"<b>This could be an emergency. Call 911 or go to the nearest ER now.</b> Insurance can be sorted out later. If you're admitted, tell Cowan (1-833-377-8447) within 48 hours."}), "bot alert");
     return;
@@ -1175,6 +1311,7 @@ function reply(raw){
   let best = null, bestScore = 0;
   S.forEach(s => { const sc = hit(text, KW[s.id] || []); if (sc > bestScore) { bestScore = sc; best = {type:"s", v:s}; } });
   EXTRA.forEach(x => { const sc = hit(text, x.kw); if (sc > bestScore) { bestScore = sc; best = {type:"x", v:x}; } });
+  track("chat/" + (best ? best.v.id : "unknown"));
   if (!best) {
     add(T({ko:"죄송해요, 그 질문에는 아직 답하기 어려워요. 아래 버튼처럼 진료 종류(치과, 약, 상담, 물리치료 등)를 넣어서 다시 물어봐 주세요. 정확한 답이 필요하면 UTSU(416-978-4911)나 Cowan(1-833-377-8447)에 문의하세요.",
            en:"I'm not sure about that one yet. Try naming the type of care (dental, prescriptions, counselling, physio…) like the buttons below. For an exact answer, contact the UTSU (416-978-4911) or Cowan (1-833-377-8447)."}), "bot");
