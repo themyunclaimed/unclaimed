@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://themyunclaimed.github.io/unclaimed/sitemap.xml
