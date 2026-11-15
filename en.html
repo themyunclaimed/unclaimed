@@ -15,7 +15,15 @@
 <meta property="og:description" content="A free guide for U of T students: what UHIP and your UTSU, UTMSU, SCSU or UTGSU health & dental plan cover, how to claim, deadlines, and walk-in clinics near campus.">
 <meta property="og:url" content="https://themyunclaimed.github.io/unclaimed/en.html">
 <meta property="og:locale" content="en_CA">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://themyunclaimed.github.io/unclaimed/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://themyunclaimed.github.io/unclaimed/og.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Unclaimed","url":"https://themyunclaimed.github.io/unclaimed/","inLanguage":"en","description":"A free guide for U of T students: what UHIP and your UTSU, UTMSU, SCSU or UTGSU health & dental plan cover, how to claim, deadlines, and walk-in clinics near campus."}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -251,6 +259,24 @@ footer{padding:48px 20px 56px}
 .map-src{font-size:12px;color:var(--muted)}
 .leaflet-popup-content{font-family:var(--font);font-size:13px}
 @media (max-width:900px){.mapwrap{grid-template-columns:1fr}.map-col{border-right:0;border-bottom:1px solid var(--line)}#map{height:380px}.map-list{max-height:none}.map-info{grid-template-columns:1fr}.map-info>div:first-child{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* mobile menu + to-top */
+.mm-btn{display:none;font:inherit;font-size:12px;font-weight:700;letter-spacing:.06em;background:var(--bg);color:var(--ink);border:1px solid var(--ink);height:34px;padding:0 10px;cursor:pointer;align-items:center;gap:6px}
+.mm-btn i{position:relative;display:block;width:14px;height:2px;background:currentColor}
+.mm-btn i::before,.mm-btn i::after{content:"";position:absolute;left:0;width:14px;height:2px;background:currentColor}
+.mm-btn i::before{top:-5px}.mm-btn i::after{top:5px}
+.mm-btn[aria-expanded="true"] i{background:transparent}
+.mm-btn[aria-expanded="true"] i::before{top:0;transform:rotate(45deg)}
+.mm-btn[aria-expanded="true"] i::after{top:0;transform:rotate(-45deg)}
+@media (max-width:900px){
+  .mm-btn{display:inline-flex}
+  header.top.mm-open nav.menu{display:flex;flex-direction:column;gap:0;position:absolute;left:0;right:0;top:56px;background:var(--bg);border-bottom:1px solid var(--ink);box-shadow:0 12px 24px rgba(0,0,0,.08)}
+  header.top.mm-open nav.menu a{padding:15px 20px;border-top:1px solid var(--line);font-size:13px}
+}
+@media (max-width:420px){.hdr-r{gap:10px}.mm-btn b{display:none}}
+.to-top{position:fixed;left:18px;bottom:18px;z-index:6;width:44px;height:44px;border:1px solid var(--ink);background:var(--bg);color:var(--ink);font:inherit;font-size:18px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s}
+.to-top.show{opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.to-top{transition:none}}
 /* campus selector */
 .pl-grid{grid-template-columns:repeat(4,1fr)}
 .pl-opt{font:inherit;text-align:left;background:var(--bg);color:var(--ink);border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px;cursor:pointer;display:grid;gap:4px}
@@ -494,6 +520,7 @@ function planTotal(p){ return p.B.filter(b => !b.noTotal).reduce((s,b) => s + (b
     <a href="#dates"><span class="ko">기한</span><span class="en">Deadlines</span></a>
   </nav>
   <div class="hdr-r">
+  <button type="button" class="mm-btn" id="mm-btn" aria-expanded="false" aria-label="Menu"><i></i><b>MENU</b></button>
   <div class="pl-menu">
     <button type="button" class="pl-pill label" id="pl-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="pl-pop"><span data-pl="campus"></span> ▾</button>
     <div class="pl-pop" id="pl-pop" role="menu" hidden>
@@ -1592,5 +1619,19 @@ document.getElementById("cb-form").addEventListener("submit", e => { e.preventDe
 </script>
 
 
+<button type="button" class="to-top" id="to-top" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  const hdr=document.querySelector("header.top"), btn=document.getElementById("mm-btn"), nav=hdr.querySelector("nav.menu");
+  function set(o){hdr.classList.toggle("mm-open",o);btn.setAttribute("aria-expanded",o)}
+  btn.addEventListener("click",()=>set(!hdr.classList.contains("mm-open")));
+  nav.addEventListener("click",e=>{if(e.target.closest("a"))set(false)});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")set(false)});
+  document.addEventListener("click",e=>{if(!hdr.contains(e.target))set(false)});
+  const t=document.getElementById("to-top");
+  addEventListener("scroll",()=>t.classList.toggle("show",scrollY>900),{passive:true});
+  t.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"}));
+})();
+</script>
 </body>
 </html>
