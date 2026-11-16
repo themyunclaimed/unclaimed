@@ -277,6 +277,23 @@ footer{padding:48px 20px 56px}
 .to-top{position:fixed;left:18px;bottom:18px;z-index:6;width:44px;height:44px;border:1px solid var(--ink);background:var(--bg);color:var(--ink);font:inherit;font-size:18px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s}
 .to-top.show{opacity:1;pointer-events:auto}
 @media (prefers-reduced-motion:reduce){.to-top{transition:none}}
+
+/* page views */
+main [hidden]{display:none !important}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+.quick a{display:flex;flex-direction:column;gap:8px;padding:26px 22px 30px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);min-height:150px}
+.quick a:hover{background:var(--tile)}
+.quick a .q-n{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.quick a b{font-size:17px}
+.quick a span:last-child{font-size:13px;color:var(--muted)}
+.quick a:nth-child(4n){border-right:0}
+@media (max-width:900px){.quick{grid-template-columns:1fr 1fr}.quick a:nth-child(4n){border-right:1px solid var(--line)}.quick a:nth-child(2n){border-right:0}}
+@media (max-width:420px){.quick{grid-template-columns:1fr}.quick a{border-right:0 !important;min-height:0}}
+nav.menu a[aria-current="page"]{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+.sec-nav{display:flex;justify-content:space-between;gap:12px;padding:22px 20px;border-top:1px solid var(--line);margin-top:24px}
+.sec-nav a{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;padding:12px 14px;border:1px solid var(--ink)}
+.sec-nav a:hover{background:var(--ink);color:#fff}
+.sec-nav .nx{margin-left:auto}
 /* campus selector */
 .pl-grid{grid-template-columns:repeat(4,1fr)}
 .pl-opt{font:inherit;text-align:left;background:var(--bg);color:var(--ink);border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px;cursor:pointer;display:grid;gap:4px}
@@ -540,7 +557,7 @@ function planTotal(p){ return p.B.filter(b => !b.noTotal).reduce((s,b) => s + (b
 </header>
 
 <main id="top">
-  <div class="hero">
+  <div class="hero" id="hero">
     <div class="copy">
       <div class="label"><span class="ko">U of T 유학생을 위한 보험 가이드</span><span class="en">For U of T international students</span></div>
       <h1><span class="ko">이미 낸 보험,<br>끝까지 챙기세요.</span><span class="en">Claim what's<br>already yours.</span></h1>
@@ -571,6 +588,11 @@ function planTotal(p){ return p.B.filter(b => !b.noTotal).reduce((s,b) => s + (b
       <button type="button" class="pl-opt" data-plan="scsu" aria-pressed="false"><span class="pl-u">UTSC</span><span class="pl-c"><span class="ko">Scarborough 학부생</span><span class="en">Scarborough undergrads</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="scsu"></span></span></button>
       <button type="button" class="pl-opt" data-plan="utgsu" aria-pressed="false"><span class="pl-u">Graduate</span><span class="pl-c"><span class="ko">대학원생</span><span class="en">Graduate students</span></span><span class="pl-t"><span class="ko">올해 최대</span><span class="en">Up to</span> <span class="pl-sum" data-sum="utgsu"></span></span></button>
     </div>
+  </section>
+
+  <section id="quick" aria-labelledby="h-quick">
+    <div class="sec-head"><h2 id="h-quick">바로 가기</h2></div>
+    <nav class="quick" aria-label="바로 가기"><a href="#plans"><span class="q-n">01</span><b>내 보험</b><span>UHIP과 학생회 플랜이 각각 뭘 보장하는지</span></a><a href="#helper"><span class="q-n">02</span><b>청구 도우미</b><span>상황을 고르면 어디에 어떻게 청구할지 알려줘요</span></a><a href="#tracker"><span class="q-n">03</span><b>내 혜택</b><span>올해 쓴 금액과 청구 기한을 기록해요</span></a><a href="#perks"><span class="q-n">04</span><b>숨은 혜택</b><span>잘 모르고 지나치는 보장 항목</span></a><a href="#where"><span class="q-n">05</span><b>병원 안내</b><span>아플 때 어디부터 가야 하는지</span></a><a href="#clinic"><span class="q-n">06</span><b>진료 지도</b><span>캠퍼스 근처 보건소·워크인·응급실</span></a><a href="#dates"><span class="q-n">07</span><b>기한</b><span>탈퇴·청구 마감일 한눈에</span></a></nav>
   </section>
 
   <section id="plans" aria-labelledby="h-plans">
@@ -1548,8 +1570,7 @@ function moreBtn(label, fn){
   return b;
 }
 function jump(id){
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+  if (window.goView) goView(id); else { const el = document.getElementById(id); if (el) el.scrollIntoView(); }
   if (window.innerWidth <= 480) close();
 }
 function answerSituation(s){
@@ -1612,13 +1633,41 @@ function close(){ panel.classList.remove("open"); shade.classList.remove("open")
 tab.addEventListener("click", open);
 shade.addEventListener("click", close);
 document.getElementById("hd-x").addEventListener("click", close);
-document.getElementById("hd-track").addEventListener("click", () => { close(); const el = document.getElementById("tracker"); if (el) el.scrollIntoView({behavior:"smooth"}); });
+document.getElementById("hd-track").addEventListener("click", () => { close(); goView("tracker"); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && panel.classList.contains("open")) close(); });
 document.getElementById("cb-form").addEventListener("submit", e => { e.preventDefault(); const v = input.value; input.value = ""; ask(v); });
 })();
 </script>
 
 
+<script>
+(function(){
+  const ORDER=["plans","helper","tracker","perks","where","clinic","dates"], NAMES={"plans": "내 보험", "helper": "청구 도우미", "tracker": "내 혜택", "perks": "숨은 혜택", "where": "병원 안내", "clinic": "진료 지도", "dates": "기한"};
+  const main=document.querySelector("main"), HOME=["hero","campus","quick"];
+  const secs=[...main.children].filter(e=>e.id);
+  ORDER.forEach((id,i)=>{ const s=document.getElementById(id); if(!s) return;
+    const d=document.createElement("div"); d.className="sec-nav";
+    d.innerHTML='<a href="#top">← 처음으로</a>'+(ORDER[i+1]?'<a class="nx" href="#'+ORDER[i+1]+'">다음: '+NAMES[ORDER[i+1]]+' →</a>':'');
+    s.appendChild(d); });
+  let cur=null;
+  function route(){
+    const id=decodeURIComponent(location.hash.slice(1))||"top";
+    let target=document.getElementById(id), view="home";
+    const sec=target&&target.closest("main > section");
+    if(sec&&ORDER.includes(sec.id)) view=sec.id;
+    secs.forEach(e=>e.hidden= view==="home" ? !HOME.includes(e.id) : e.id!==view);
+    document.querySelectorAll("nav.menu a").forEach(a=>{ if(a.getAttribute("href")==="#"+view) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+    const hdr=document.querySelector("header.top"); hdr&&hdr.classList.remove("mm-open");
+    if(view==="clinic"&&window.MAP){ setTimeout(()=>{ MAP.invalidateSize(); renderMap(); },30); }
+    if(target&&id!=="top"&&id!=="hero"&&(target!==sec||view==="home")){ setTimeout(()=>target.scrollIntoView({block:"start"}),40); }
+    else window.scrollTo(0,0);
+    if(cur!==view){ cur=view; if(window.track) track("view/"+view); }
+  }
+  window.goView=function(id){ if(location.hash==="#"+id) route(); else location.hash=id; };
+  addEventListener("hashchange",route);
+  route();
+})();
+</script>
 <button type="button" class="to-top" id="to-top" aria-label="맨 위로">↑</button>
 <script>
 (function(){
